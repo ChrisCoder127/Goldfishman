@@ -1,0 +1,274 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Interactive Aquarium | Goldfishman</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;overflow:hidden;font-family:"Trebuchet MS",Arial,sans-serif;color:white;background:#063b52}
+#water,#world{position:fixed;inset:0;width:100%;height:100%}
+#water{z-index:0}
+#world{z-index:1;touch-action:none}
+header{position:fixed;top:0;left:0;right:0;z-index:3;padding:20px 24px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(rgba(0,30,60,.5),transparent);pointer-events:none}
+header a{pointer-events:auto}
+h1{margin:0;font-size:24px;text-shadow:0 2px 10px #003c60}
+.back{color:white;text-decoration:none;background:rgba(255,255,255,.17);border:1px solid rgba(255,255,255,.4);border-radius:12px;padding:10px 15px}
+.panel{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:3;width:min(95%,720px);padding:15px;border-radius:22px;border:1px solid rgba(255,255,255,.45);background:rgba(0,45,75,.62);backdrop-filter:blur(16px);box-shadow:0 12px 40px rgba(0,0,0,.2)}
+.stats{display:flex;justify-content:space-around;gap:10px;margin-bottom:13px;font-size:14px;flex-wrap:wrap}
+.stat strong{font-size:19px;display:block;text-align:center}
+.buttons{display:flex;justify-content:center;flex-wrap:wrap;gap:9px}
+button{cursor:pointer;color:white;border:1px solid rgba(255,255,255,.55);border-radius:12px;padding:11px 15px;font-size:14px;font-weight:bold;background:rgba(255,255,255,.16);transition:.2s}
+button:hover{background:rgba(255,255,255,.3);transform:translateY(-2px)}
+button:active{transform:scale(.97)}
+.hint{text-align:center;font-size:12px;color:#d8f5ff;margin:12px 0 0}
+@media(max-width:500px){header{padding:12px}h1{font-size:18px}.panel{bottom:8px;padding:11px}button{padding:10px;font-size:12px}}
+</style>
+</head>
+<body>
+<canvas id="water"></canvas>
+<canvas id="world"></canvas>
+
+<header>
+<h1>🐠 Interactive Aquarium</h1>
+<a class="back" href="/">← Home</a>
+</header>
+
+<div class="panel">
+<div class="stats">
+<div class="stat">Fish<strong id="fishCount">20</strong></div>
+<div class="stat">Sharks<strong id="sharkCount">0</strong></div>
+<div class="stat">Food<strong id="foodCount">0</strong></div>
+<div class="stat">Tank<strong id="tankStatus">Healthy</strong></div>
+</div>
+<div class="buttons">
+<button id="addFish">🐠 Add Fish</button>
+<button id="feed">🍽 Feed Fish</button>
+<button id="addShark">🦈 Add Shark</button>
+<button id="removeSharks">Remove Sharks</button>
+<button id="reset">↻ Reset Tank</button>
+</div>
+<p class="hint">Drag a fish to pick it up and move it. Feed your fish so they don't starve!</p>
+</div>
+
+<script>
+const water=document.getElementById("water");
+const wgl=water.getContext("webgl");
+const world=document.getElementById("world");
+const ctx=world.getContext("2d");
+
+let W=innerWidth,H=innerHeight,dpr=1;
+
+function resize(){
+ dpr=Math.min(devicePixelRatio||1,2);
+ W=innerWidth;H=innerHeight;
+ for(const c of [water,world]){
+  c.width=W*dpr;c.height=H*dpr;
+  c.style.width=W+"px";c.style.height=H+"px";
+ }
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ if(wgl)wgl.viewport(0,0,water.width,water.height);
+}
+addEventListener("resize",resize);
+
+if(wgl){
+const vertex=`attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}`;
+const fragment=`
+precision highp float;
+uniform vec2 resolution;
+uniform float time;
+void main(){
+ vec2 uv=gl_FragCoord.xy/resolution;
+ float t=time*.25;
+ float wave=sin(uv.x*14.+t)*.025+sin(uv.y*19.-t)*.025+sin((uv.x+uv.y)*23.+t)*.012;
+ vec2 p=uv+wave;
+ float caustic=pow(abs(sin(p.x*35.+sin(p.y*17.+t)*2.)*sin(p.y*30.-t)),9.)*.45;
+ float light=sin(p.x*15.+t)*sin(p.y*12.-t)*.08;
+ vec3 col=mix(vec3(.005,.24,.39),vec3(.03,.66,.77),uv.y*.7+.1+light);
+ col+=caustic;
+ gl_FragColor=vec4(col,1.);
+}`;
+function makeShader(type,src){
+ const s=wgl.createShader(type);
+ wgl.shaderSource(s,src);wgl.compileShader(s);
+ if(!wgl.getShaderParameter(s,wgl.COMPILE_STATUS)){console.error(wgl.getShaderInfoLog(s));return null;}
+ return s;
+}
+const vs=makeShader(wgl.VERTEX_SHADER,vertex);
+const fs=makeShader(wgl.FRAGMENT_SHADER,fragment);
+let waterProgram=null;
+if(vs&&fs){
+ waterProgram=wgl.createProgram();
+ wgl.attachShader(waterProgram,vs);wgl.attachShader(waterProgram,fs);wgl.linkProgram(waterProgram);
+ if(wgl.getProgramParameter(waterProgram,wgl.LINK_STATUS)){
+  wgl.useProgram(waterProgram);
+  const buf=wgl.createBuffer();
+  wgl.bindBuffer(wgl.ARRAY_BUFFER,buf);
+  wgl.bufferData(wgl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),wgl.STATIC_DRAW);
+  const loc=wgl.getAttribLocation(waterProgram,"p");
+  wgl.enableVertexAttribArray(loc);
+  wgl.vertexAttribPointer(loc,2,wgl.FLOAT,false,0,0);
+  waterProgram.time=wgl.getUniformLocation(waterProgram,"time");
+  waterProgram.res=wgl.getUniformLocation(waterProgram,"resolution");
+ }
+}
+}
+
+const fish=[],sharks=[],food=[],bubbles=[];
+const colors=["#ff9b35","#ffcf45","#ff6c55","#42d9d0","#f2f4ff","#ff8bd2","#9b9bff","#a7ef78","#f5a6ff","#ffffff"];
+let nextId=1;
+const rand=(a,b)=>a+Math.random()*(b-a);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function makeFish(){
+ const size=rand(12,27);
+ return{id:nextId++,x:rand(35,Math.max(36,W-35)),y:rand(100,Math.max(101,H-180)),vx:rand(-.8,.8),vy:rand(-.5,.5),size,color:colors[Math.floor(Math.random()*colors.length)],hunger:100,swim:rand(0,Math.PI*2),held:false};
+}
+function makeShark(){
+ return{x:rand(60,Math.max(61,W-60)),y:rand(110,Math.max(111,H-180)),vx:rand(-1,1),vy:rand(-.5,.5),size:rand(45,65),swim:0};
+}
+function resetTank(){
+ fish.length=0;sharks.length=0;food.length=0;
+ for(let i=0;i<20;i++)fish.push(makeFish());
+ updateHUD();
+}
+
+function updateHUD(){
+ document.getElementById("fishCount").textContent=fish.length;
+ document.getElementById("sharkCount").textContent=sharks.length;
+ document.getElementById("foodCount").textContent=food.length;
+ const hungry=fish.some(f=>f.hunger<25);
+ document.getElementById("tankStatus").textContent=fish.length===0?"Empty":hungry?"Hungry":"Healthy";
+}
+resetTank();
+
+document.getElementById("addFish").onclick=()=>{fish.push(makeFish());updateHUD();};
+document.getElementById("feed").onclick=()=>{
+ for(let i=0;i<18;i++)food.push({x:rand(35,Math.max(36,W-35)),y:rand(75,160),vy:rand(.4,1.2),size:rand(3,5)});
+ updateHUD();
+};
+document.getElementById("addShark").onclick=()=>{sharks.push(makeShark());updateHUD();};
+document.getElementById("removeSharks").onclick=()=>{sharks.length=0;updateHUD();};
+document.getElementById("reset").onclick=resetTank;
+
+let heldFish=null;
+function pointerPos(e){
+ const r=world.getBoundingClientRect();
+ return{x:e.clientX-r.left,y:e.clientY-r.top};
+}
+world.addEventListener("pointerdown",e=>{
+ const p=pointerPos(e);
+ for(let i=fish.length-1;i>=0;i--){
+  const f=fish[i];
+  if(Math.hypot(f.x-p.x,f.y-p.y)<f.size+12){
+   heldFish=f;f.held=true;
+   world.setPointerCapture(e.pointerId);
+   break;
+  }
+ }
+});
+world.addEventListener("pointermove",e=>{
+ if(!heldFish)return;
+ const p=pointerPos(e);
+ heldFish.x=p.x;heldFish.y=p.y;
+ heldFish.vx=0;heldFish.vy=0;
+});
+function releaseFish(){if(heldFish){heldFish.held=false;heldFish=null;}}
+world.addEventListener("pointerup",releaseFish);
+world.addEventListener("pointercancel",releaseFish);
+
+function drawFish(f){
+ ctx.save();ctx.translate(f.x,f.y);
+ if(f.vx<-.05)ctx.scale(-1,1);
+ const s=f.size,tail=Math.sin(f.swim)*s*.25;
+ ctx.fillStyle=f.color;
+ ctx.beginPath();ctx.moveTo(-s*.6,0);ctx.lineTo(-s*1.45,-s*.65+tail);ctx.lineTo(-s*1.45,s*.65+tail);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.ellipse(0,0,s,s*.58,0,0,Math.PI*2);ctx.fill();
+ ctx.beginPath();ctx.moveTo(-s*.1,-s*.4);ctx.quadraticCurveTo(s*.4,-s*1.15,s*.8,-s*.4);ctx.fillStyle="rgba(255,255,255,.25)";ctx.fill();
+ ctx.fillStyle="white";ctx.beginPath();ctx.arc(s*.55,-s*.13,Math.max(2,s*.14),0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#17324b";ctx.beginPath();ctx.arc(s*.59,-s*.13,Math.max(1,s*.07),0,Math.PI*2);ctx.fill();
+ ctx.restore();
+}
+function drawShark(s){
+ ctx.save();ctx.translate(s.x,s.y);if(s.vx<0)ctx.scale(-1,1);
+ const z=s.size;ctx.fillStyle="#9baebc";
+ ctx.beginPath();ctx.moveTo(-z*.65,0);ctx.lineTo(-z*1.25,-z*.45);ctx.lineTo(-z*1.15,z*.45);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.moveTo(-z*.1,-z*.25);ctx.lineTo(z*.2,-z*.8);ctx.lineTo(z*.5,-z*.25);ctx.closePath();ctx.fill();
+ ctx.beginPath();ctx.ellipse(0,0,z,z*.38,0,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle="#263d50";ctx.beginPath();ctx.arc(z*.65,-z*.12,3,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle="#354e61";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(z*.5,z*.18);ctx.lineTo(z*.8,z*.2);ctx.stroke();
+ ctx.restore();
+}
+
+let last=0,hudTimer=0;
+function frame(t){
+ const dt=Math.min((t-last)/1000||.016,.04);last=t;
+
+ if(waterProgram){
+  wgl.useProgram(waterProgram);
+  wgl.uniform1f(waterProgram.time,t*.001);
+  wgl.uniform2f(waterProgram.res,water.width,water.height);
+  wgl.drawArrays(wgl.TRIANGLE_STRIP,0,4);
+ }
+ ctx.clearRect(0,0,W,H);
+
+ if(Math.random()<.12)bubbles.push({x:rand(0,W),y:H+10,r:rand(2,7),speed:rand(15,45)});
+ for(let i=bubbles.length-1;i>=0;i--){
+  const b=bubbles[i];b.y-=b.speed*dt;
+  if(b.y<-15)bubbles.splice(i,1);
+  else{ctx.strokeStyle="rgba(255,255,255,.5)";ctx.lineWidth=1;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.stroke();ctx.fillStyle="rgba(255,255,255,.12)";ctx.fill();}
+ }
+
+ for(let i=food.length-1;i>=0;i--){
+  const p=food[i];p.y+=p.vy*60*dt;
+  ctx.fillStyle="#d9a34c";ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
+  if(p.y>H-15)food.splice(i,1);
+ }
+
+ for(let i=fish.length-1;i>=0;i--){
+  const f=fish[i];
+  if(!f.held){
+   f.hunger-=.22*dt;f.swim+=dt*7;
+   let targetFood=null,dist=Infinity;
+   for(const p of food){const d=Math.hypot(p.x-f.x,p.y-f.y);if(d<dist){dist=d;targetFood=p;}}
+   if(targetFood&&dist<260){
+    const dx=targetFood.x-f.x,dy=targetFood.y-f.y,d=Math.max(1,Math.hypot(dx,dy));
+    f.vx+=(dx/d)*dt*2.3;f.vy+=(dy/d)*dt*2.3;
+    if(dist<f.size+targetFood.size+5){
+     const idx=food.indexOf(targetFood);if(idx!==-1)food.splice(idx,1);
+     f.hunger=Math.min(100,f.hunger+28);
+    }
+   }else{f.vx+=rand(-.7,.7)*dt;f.vy+=rand(-.6,.6)*dt;}
+   f.vy+=Math.sin(t*.001+f.id)*dt*.12;
+   f.vx*=Math.pow(.985,dt*60);f.vy*=Math.pow(.985,dt*60);
+   f.x+=f.vx*60*dt;f.y+=f.vy*60*dt;
+   f.x=clamp(f.x,25,W-25);f.y=clamp(f.y,85,H-145);
+  }
+  if(f.hunger<=0){fish.splice(i,1);continue;}
+  drawFish(f);
+ }
+
+ for(let i=0;i<sharks.length;i++){
+  const s=sharks[i];s.swim+=dt*5;
+  let target=null,dist=Infinity;
+  for(const f of fish){const d=Math.hypot(f.x-s.x,f.y-s.y);if(d<dist){dist=d;target=f;}}
+  if(target){
+   const dx=target.x-s.x,dy=target.y-s.y,d=Math.max(1,Math.hypot(dx,dy));
+   s.vx+=(dx/d)*dt*1.5;s.vy+=(dy/d)*dt*1.5;
+   if(dist<s.size*.65+target.size){const idx=fish.indexOf(target);if(idx!==-1)fish.splice(idx,1);}
+  }else{s.vx+=rand(-.5,.5)*dt;s.vy+=rand(-.4,.4)*dt;}
+  s.vx=clamp(s.vx,-2.5,2.5);s.vy=clamp(s.vy,-1.8,1.8);
+  s.vx*=Math.pow(.99,dt*60);s.vy*=Math.pow(.99,dt*60);
+  s.x=clamp(s.x+s.vx*60*dt,45,W-45);s.y=clamp(s.y+s.vy*60*dt,90,H-145);
+  drawShark(s);
+ }
+
+ hudTimer+=dt;if(hudTimer>.5){updateHUD();hudTimer=0;}
+ requestAnimationFrame(frame);
+}
+resize();
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

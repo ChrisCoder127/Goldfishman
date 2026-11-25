@@ -1,0 +1,492 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&display=swap');
+
+:root {
+    --blue: #28b9e8;
+    --dark: #394c58;
+    --orange: #ff9c32;
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    font-family: 'Nunito', sans-serif;
+    color: var(--dark);
+    background-color: #eafaff;
+    background-image:
+        linear-gradient(#b9d0d8 1.5px, transparent 1.5px),
+        linear-gradient(90deg, #b9d0d8 1.5px, transparent 1.5px);
+    background-size: 48px 48px;
+}
+
+/* UNDERWATER BACKGROUND */
+
+.ocean {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* SWIMMING FISH */
+
+.fish {
+    --fish-color: #ff9c32;
+
+    position: absolute;
+    width: 105px;
+    height: 62px;
+    border-radius: 55% 48% 48% 55%;
+    background: var(--fish-color);
+    border: 4px solid rgba(0, 0, 0, 0.08);
+    animation: swim 22s linear infinite;
+}
+
+.fish::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: -31px;
+    width: 0;
+    height: 0;
+    border-top: 19px solid transparent;
+    border-bottom: 19px solid transparent;
+    border-right: 34px solid var(--fish-color);
+}
+
+.fish::after {
+    content: "";
+    position: absolute;
+    top: 17px;
+    right: 19px;
+    width: 9px;
+    height: 9px;
+    background: #344b57;
+    border: 3px solid white;
+    border-radius: 50%;
+}
+
+.fish-one {
+    --fish-color: #ffad35;
+    top: 16%;
+    left: -150px;
+    transform: scale(1.15);
+    animation-duration: 25s;
+}
+
+.fish-two {
+    --fish-color: #16c9a0;
+    top: 67%;
+    left: -180px;
+    transform: scale(0.75);
+    animation-duration: 19s;
+    animation-delay: -8s;
+}
+
+.fish-three {
+    --fish-color: #ff668d;
+    top: 42%;
+    left: -160px;
+    transform: scale(0.55);
+    animation-duration: 30s;
+    animation-delay: -15s;
+}
+
+.fish-four {
+    --fish-color: #42b9ff;
+    top: 84%;
+    left: -170px;
+    transform: scale(1.25);
+    animation-duration: 35s;
+    animation-delay: -18s;
+}
+
+.fish-five {
+    --fish-color: #b28cff;
+    top: 8%;
+    left: -170px;
+    transform: scale(0.65);
+    animation-duration: 28s;
+    animation-delay: -20s;
+}
+
+.fish-six {
+    --fish-color: #ff7850;
+    top: 55%;
+    left: -180px;
+    transform: scale(0.9);
+    animation-duration: 32s;
+    animation-delay: -23s;
+}
+
+@keyframes swim {
+    0% {
+        left: -180px;
+    }
+
+    100% {
+        left: calc(100% + 180px);
+    }
+}
+
+/* BUBBLES */
+
+.bubble {
+    position: absolute;
+    bottom: -50px;
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(40, 185, 232, 0.35);
+    border-radius: 50%;
+    animation: rise 12s linear infinite;
+}
+
+.bubble-one {
+    left: 12%;
+    animation-duration: 14s;
+}
+
+.bubble-two {
+    left: 35%;
+    animation-duration: 18s;
+    animation-delay: -5s;
+}
+
+.bubble-three {
+    left: 60%;
+    animation-duration: 13s;
+    animation-delay: -8s;
+}
+
+.bubble-four {
+    left: 82%;
+    animation-duration: 17s;
+    animation-delay: -3s;
+}
+
+.bubble-five {
+    left: 93%;
+    animation-duration: 20s;
+    animation-delay: -11s;
+}
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(0.7);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(-115vh) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* MAIN MENU */
+
+.menu {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+/* BRAND */
+
+.brand {
+    margin-bottom: 30px;
+}
+
+.brand-small {
+    margin: 0 0 5px;
+    color: #829ba5;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 4px;
+}
+
+.brand h1 {
+    margin: 0;
+    color: #586c76;
+    font-size: clamp(48px, 8vw, 94px);
+    font-weight: 900;
+    letter-spacing: -5px;
+    line-height: 1.1;
+}
+
+.brand h1 span {
+    color: var(--orange);
+}
+
+.subtitle {
+    margin: 10px 0 0;
+    color: #7d929b;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* PLAY AREA */
+
+.play-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: min(390px, 90vw);
+}
+
+#username {
+    width: 100%;
+    height: 62px;
+    padding: 0 22px;
+    color: #526771;
+    background: white;
+    border: 3px solid #a9bec7;
+    border-radius: 18px;
+    outline: none;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 5px 0 rgba(73, 112, 128, 0.08);
+}
+
+#username:focus {
+    border-color: var(--blue);
+}
+
+#username::placeholder {
+    color: #a5b5bc;
+}
+
+/* PLAY BUTTON */
+
+.play-button {
+    display: grid;
+    place-items: center;
+    width: 180px;
+    height: 180px;
+    margin-top: 38px;
+    border: 8px solid #9db3bd;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease;
+    box-shadow: 0 8px 0 rgba(65, 102, 117, 0.12);
+}
+
+.play-button:hover {
+    transform: scale(1.07);
+    border-color: var(--orange);
+}
+
+.play-button:active {
+    transform: scale(0.96);
+}
+
+.play-icon {
+    width: 0;
+    height: 0;
+    margin-left: 12px;
+    border-top: 31px solid transparent;
+    border-bottom: 31px solid transparent;
+    border-left: 48px solid #82949c;
+}
+
+.play-button:hover .play-icon {
+    border-left-color: var(--orange);
+}
+
+.play-label {
+    margin: 10px 0 0;
+    color: #657982;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+#error {
+    min-height: 20px;
+    color: #d94c4c;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* SETTINGS */
+
+.settings {
+    position: fixed;
+    left: 35px;
+    bottom: 35px;
+    z-index: 5;
+}
+
+.settings summary {
+    display: grid;
+    place-items: center;
+    width: 90px;
+    height: 90px;
+    list-style: none;
+    border: 5px solid #9db3bd;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: 0 5px 0 rgba(65, 102, 117, 0.1);
+}
+
+.settings summary::-webkit-details-marker {
+    display: none;
+}
+
+.settings summary:hover {
+    border-color: var(--orange);
+    transform: rotate(25deg);
+}
+
+.gear {
+    color: #82949c;
+    font-size: 48px;
+    line-height: 1;
+}
+
+.settings-panel {
+    position: absolute;
+    bottom: 105px;
+    left: 0;
+    width: 245px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #b4cbd4;
+    border-radius: 17px;
+    text-align: left;
+    box-shadow: 0 8px 25px rgba(50, 85, 100, 0.12);
+}
+
+.settings-panel h2 {
+    margin: 0 0 15px;
+    color: #586c76;
+    font-size: 21px;
+}
+
+.settings-panel label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    color: #687f89;
+    font-size: 13px;
+    font-weight: 800;
+    border-top: 1px solid #e5eef1;
+}
+
+.settings-panel input {
+    width: 19px;
+    height: 19px;
+    accent-color: var(--blue);
+    cursor: pointer;
+}
+
+/* SETTINGS FISH TOGGLE */
+
+body:has(#showFish:not(:checked)) .ocean .fish {
+    display: none;
+}
+
+/* FOOTER */
+
+.version {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    color: #9aadb5;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.version span {
+    color: var(--orange);
+    padding: 0 5px;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+    .brand {
+        margin-bottom: 35px;
+    }
+
+    .brand h1 {
+        font-size: 53px;
+        letter-spacing: -3px;
+    }
+
+    .subtitle {
+        font-size: 13px;
+    }
+
+    .play-button {
+        width: 150px;
+        height: 150px;
+        margin-top: 32px;
+    }
+
+    .play-icon {
+        border-top-width: 25px;
+        border-bottom-width: 25px;
+        border-left-width: 39px;
+    }
+
+    .settings {
+        left: 18px;
+        bottom: 18px;
+    }
+
+    .settings summary {
+        width: 65px;
+        height: 65px;
+        border-width: 4px;
+    }
+
+    .gear {
+        font-size: 35px;
+    }
+
+    .settings-panel {
+        bottom: 78px;
+    }
+
+    .version {
+        right: 15px;
+        bottom: 39px;
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fish,
+    .bubble {
+        animation-play-state: paused;
+    }
+}

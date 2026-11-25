@@ -4,89 +4,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#eafaff">
+    <meta name="theme-color" content="#e9f7f7">
 
-    <title>GoldfishMan.com</title>
+    <title>GoldfishMan — Swim Your Way</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- Animated underwater background -->
-    <div class="ocean">
-        <div class="fish fish-one"><span></span></div>
-        <div class="fish fish-two"><span></span></div>
-        <div class="fish fish-three"><span></span></div>
-        <div class="fish fish-four"><span></span></div>
-        <div class="fish fish-five"><span></span></div>
-        <div class="fish fish-six"><span></span></div>
+    <!-- Background artwork -->
+    <div class="underwater" aria-hidden="true">
 
-        <div class="bubble bubble-one"></div>
-        <div class="bubble bubble-two"></div>
-        <div class="bubble bubble-three"></div>
-        <div class="bubble bubble-four"></div>
-        <div class="bubble bubble-five"></div>
+        <div class="water-grid"></div>
+
+        <svg class="background-fish fish-a" viewBox="0 0 180 110">
+            <path d="M35 55 L2 22 L5 88 Z" fill="#f28b36"/>
+            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#f28b36"/>
+            <path d="M75 24 Q92 -3 115 24" fill="#f28b36"/>
+            <circle cx="123" cy="46" r="5" fill="#293e47"/>
+            <circle cx="124" cy="45" r="1.8" fill="white"/>
+        </svg>
+
+        <svg class="background-fish fish-b" viewBox="0 0 180 110">
+            <path d="M35 55 L2 22 L5 88 Z" fill="#36bfa6"/>
+            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#36bfa6"/>
+            <path d="M75 24 Q92 -3 115 24" fill="#36bfa6"/>
+            <circle cx="123" cy="46" r="5" fill="#293e47"/>
+            <circle cx="124" cy="45" r="1.8" fill="white"/>
+        </svg>
+
+        <svg class="background-fish fish-c" viewBox="0 0 180 110">
+            <path d="M35 55 L2 22 L5 88 Z" fill="#e9a5b2"/>
+            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#e9a5b2"/>
+            <path d="M75 24 Q92 -3 115 24" fill="#e9a5b2"/>
+            <circle cx="123" cy="46" r="5" fill="#293e47"/>
+            <circle cx="124" cy="45" r="1.8" fill="white"/>
+        </svg>
+
+        <svg class="background-fish fish-d" viewBox="0 0 180 110">
+            <path d="M35 55 L2 22 L5 88 Z" fill="#63a9d5"/>
+            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#63a9d5"/>
+            <path d="M75 24 Q92 -3 115 24" fill="#63a9d5"/>
+            <circle cx="123" cy="46" r="5" fill="#293e47"/>
+            <circle cx="124" cy="45" r="1.8" fill="white"/>
+        </svg>
+
+        <span class="bubble b1"></span>
+        <span class="bubble b2"></span>
+        <span class="bubble b3"></span>
+        <span class="bubble b4"></span>
+        <span class="bubble b5"></span>
+        <span class="bubble b6"></span>
+
     </div>
 
+
+    <!-- Top navigation -->
+    <header class="topbar">
+
+        <a class="wordmark" href="/">
+            <span class="brand-symbol">G</span>
+            <span>GOLDFISHMAN</span>
+        </a>
+
+        <div class="server-status">
+            <span class="status-light" id="connectionDot"></span>
+            <span id="connection">CONNECTING</span>
+        </div>
+
+    </header>
+
+
     <!-- Main menu -->
-    <main class="menu">
+    <main class="main-menu">
 
-        <div class="brand">
-            <p class="brand-small">WELCOME TO THE OCEAN</p>
-            <h1>Goldfish<span>Man</span></h1>
-            <p class="subtitle">A bigger pond. A bigger adventure.</p>
-        </div>
+        <section class="welcome">
 
-        <div class="play-area">
+            <div class="edition">
+                <span class="edition-line"></span>
+                THE OCEAN IS YOURS
+                <span class="edition-line"></span>
+            </div>
 
-            <input
-                type="text"
-                id="username"
-                maxlength="16"
-                placeholder="Enter your username"
-                value="Goldfish"
-                autocomplete="nickname"
-            >
+            <h1>
+                Goldfish<span>Man</span><sup>®</sup>
+            </h1>
 
-            <button id="play" class="play-button" type="button">
-                <span class="play-icon"></span>
-            </button>
+            <p class="tagline">
+                Find your place in the food chain.
+            </p>
 
-            <p class="play-label">PLAY</p>
+        </section>
 
-            <p id="error" role="status"></p>
 
-        </div>
+        <!-- Game entrance -->
+        <section class="entrance">
+
+            <form id="joinForm" class="join-card">
+
+                <label for="username">YOUR PLAYER NAME</label>
+
+                <div class="name-input">
+                    <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        maxlength="16"
+                        placeholder="Enter a name..."
+                        value="Goldfish"
+                        autocomplete="nickname"
+                        required
+                    >
+
+                    <span class="input-count">16 MAX</span>
+                </div>
+
+                <button id="play" class="play-button" type="submit">
+
+                    <span class="play-button-text">PLAY</span>
+
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M8 4.5L19 12L8 19.5V4.5Z" fill="currentColor"/>
+                    </svg>
+
+                </button>
+
+                <p id="error" role="status"></p>
+
+                <div class="controls-note">
+                    <span>WASD</span>
+                    <span class="note-divider">/</span>
+                    <span>ARROW KEYS</span>
+                    <span class="note-divider">/</span>
+                    <span>MOUSE</span>
+                </div>
+
+            </form>
+
+        </section>
+
 
         <!-- Settings -->
-        <details class="settings">
-            <summary aria-label="Settings" title="Settings">
-                <span class="gear">⚙</span>
+        <details class="settings" id="settings">
+
+            <summary aria-label="Open settings">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 8.3a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/>
+                    <path d="m19.4 13.5 1.1.9-1.7 3-1.3-.6a7.6 7.6 0 0 1-1.7 1l-.2 1.5h-3.5l-.2-1.5a7.6 7.6 0 0 1-1.7-1l-1.3.6-1.7-3 1.1-.9a7.2 7.2 0 0 1 0-2l-1.1-.9 1.7-3 1.3.6a7.6 7.6 0 0 1 1.7-1l.2-1.5h3.5l.2 1.5a7.6 7.6 0 0 1 1.7 1l1.3-.6 1.7 3-1.1.9a7.2 7.2 0 0 1 0 2Z"/>
+                </svg>
             </summary>
 
             <div class="settings-panel">
-                <h2>Settings</h2>
+
+                <div class="settings-heading">
+                    <h2>Settings</h2>
+                    <span>GAME OPTIONS</span>
+                </div>
+
+                <label>
+                    <span>Background fish</span>
+                    <input type="checkbox" id="showFish" checked>
+                </label>
 
                 <label>
                     <span>Sound</span>
                     <input type="checkbox" id="sound" checked>
                 </label>
 
-                <label>
-                    <span>Show background fish</span>
-                    <input type="checkbox" id="showFish" checked>
-                </label>
             </div>
+
         </details>
 
-        <div class="version">
-            GOLDFISHMAN.COM <span>•</span> EARLY ACCESS
-        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+
+            <span>GOLDFISHMAN.COM</span>
+
+            <span class="footer-center">SWIM. GROW. SURVIVE.</span>
+
+            <span>VERSION 0.1</span>
+
+        </footer>
 
     </main>
 
-    <script src="menu.js"></script>
+
+    <!-- Actual multiplayer game -->
+    <canvas id="game"></canvas>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="game.js"></script>
 
 </body>
 </html>

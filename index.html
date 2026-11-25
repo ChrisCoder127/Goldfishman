@@ -5,64 +5,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#e9f7f7">
-
-    <title>GoldfishMan — Swim Your Way</title>
-
+    <title>GoldfishMan</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <!-- Background artwork -->
     <div class="underwater" aria-hidden="true">
-
         <div class="water-grid"></div>
-
-        <svg class="background-fish fish-a" viewBox="0 0 180 110">
-            <path d="M35 55 L2 22 L5 88 Z" fill="#f28b36"/>
-            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#f28b36"/>
-            <path d="M75 24 Q92 -3 115 24" fill="#f28b36"/>
-            <circle cx="123" cy="46" r="5" fill="#293e47"/>
-            <circle cx="124" cy="45" r="1.8" fill="white"/>
-        </svg>
-
-        <svg class="background-fish fish-b" viewBox="0 0 180 110">
-            <path d="M35 55 L2 22 L5 88 Z" fill="#36bfa6"/>
-            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#36bfa6"/>
-            <path d="M75 24 Q92 -3 115 24" fill="#36bfa6"/>
-            <circle cx="123" cy="46" r="5" fill="#293e47"/>
-            <circle cx="124" cy="45" r="1.8" fill="white"/>
-        </svg>
-
-        <svg class="background-fish fish-c" viewBox="0 0 180 110">
-            <path d="M35 55 L2 22 L5 88 Z" fill="#e9a5b2"/>
-            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#e9a5b2"/>
-            <path d="M75 24 Q92 -3 115 24" fill="#e9a5b2"/>
-            <circle cx="123" cy="46" r="5" fill="#293e47"/>
-            <circle cx="124" cy="45" r="1.8" fill="white"/>
-        </svg>
-
-        <svg class="background-fish fish-d" viewBox="0 0 180 110">
-            <path d="M35 55 L2 22 L5 88 Z" fill="#63a9d5"/>
-            <ellipse cx="87" cy="55" rx="55" ry="34" fill="#63a9d5"/>
-            <path d="M75 24 Q92 -3 115 24" fill="#63a9d5"/>
-            <circle cx="123" cy="46" r="5" fill="#293e47"/>
-            <circle cx="124" cy="45" r="1.8" fill="white"/>
-        </svg>
-
-        <span class="bubble b1"></span>
-        <span class="bubble b2"></span>
-        <span class="bubble b3"></span>
-        <span class="bubble b4"></span>
-        <span class="bubble b5"></span>
-        <span class="bubble b6"></span>
-
     </div>
 
-
-    <!-- Top navigation -->
     <header class="topbar">
-
         <a class="wordmark" href="/">
             <span class="brand-symbol">G</span>
             <span>GOLDFISHMAN</span>
@@ -70,132 +22,94 @@
 
         <div class="server-status">
             <span class="status-light" id="connectionDot"></span>
-            <span id="connection">CONNECTING</span>
+            <span id="connection">OFFLINE</span>
         </div>
-
     </header>
 
-
-    <!-- Main menu -->
-    <main class="main-menu">
+    <main class="main-menu" id="mainMenu">
 
         <section class="welcome">
-
-            <div class="edition">
-                <span class="edition-line"></span>
-                THE OCEAN IS YOURS
-                <span class="edition-line"></span>
-            </div>
-
-            <h1>
-                Goldfish<span>Man</span><sup>®</sup>
-            </h1>
-
-            <p class="tagline">
-                Find your place in the food chain.
-            </p>
-
+            <div class="edition">THE OCEAN IS YOURS</div>
+            <h1>Goldfish<span>Man</span></h1>
+            <p class="tagline">Find your place in the food chain.</p>
         </section>
 
-
-        <!-- Game entrance -->
         <section class="entrance">
-
             <form id="joinForm" class="join-card">
-
                 <label for="username">YOUR PLAYER NAME</label>
 
                 <div class="name-input">
                     <input
                         id="username"
-                        name="username"
                         type="text"
                         maxlength="16"
-                        placeholder="Enter a name..."
                         value="Goldfish"
+                        placeholder="Enter a name..."
                         autocomplete="nickname"
-                        required
                     >
-
-                    <span class="input-count">16 MAX</span>
                 </div>
 
                 <button id="play" class="play-button" type="submit">
-
                     <span class="play-button-text">PLAY</span>
-
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M8 4.5L19 12L8 19.5V4.5Z" fill="currentColor"/>
-                    </svg>
-
+                    <span aria-hidden="true">▶</span>
                 </button>
 
                 <p id="error" role="status"></p>
 
                 <div class="controls-note">
-                    <span>WASD</span>
-                    <span class="note-divider">/</span>
-                    <span>ARROW KEYS</span>
-                    <span class="note-divider">/</span>
-                    <span>MOUSE</span>
+                    WASD / ARROW KEYS / MOUSE
                 </div>
-
             </form>
-
         </section>
 
+        <div class="offline-hint" id="offlineHint">
+            PRESS CTRL + ALT + I TO ENABLE OFFLINE TEST MODE
+        </div>
 
-        <!-- Settings -->
         <details class="settings" id="settings">
-
             <summary aria-label="Open settings">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 8.3a3.7 3.7 0 1 0 0 7.4 3.7 3.7 0 0 0 0-7.4Z"/>
-                    <path d="m19.4 13.5 1.1.9-1.7 3-1.3-.6a7.6 7.6 0 0 1-1.7 1l-.2 1.5h-3.5l-.2-1.5a7.6 7.6 0 0 1-1.7-1l-1.3.6-1.7-3 1.1-.9a7.2 7.2 0 0 1 0-2l-1.1-.9 1.7-3 1.3.6a7.6 7.6 0 0 1 1.7-1l.2-1.5h3.5l.2 1.5a7.6 7.6 0 0 1 1.7 1l1.3-.6 1.7 3-1.1.9a7.2 7.2 0 0 1 0 2Z"/>
-                </svg>
+                <span class="gear">⚙</span>
             </summary>
 
             <div class="settings-panel">
-
-                <div class="settings-heading">
-                    <h2>Settings</h2>
-                    <span>GAME OPTIONS</span>
-                </div>
-
+                <h2>Settings</h2>
                 <label>
                     <span>Background fish</span>
                     <input type="checkbox" id="showFish" checked>
                 </label>
-
                 <label>
                     <span>Sound</span>
                     <input type="checkbox" id="sound" checked>
                 </label>
-
             </div>
-
         </details>
 
-
-        <!-- Footer -->
         <footer class="footer">
-
             <span>GOLDFISHMAN.COM</span>
-
-            <span class="footer-center">SWIM. GROW. SURVIVE.</span>
-
-            <span>VERSION 0.1</span>
-
+            <span>SWIM. GROW. SURVIVE.</span>
+            <span>TEST BUILD</span>
         </footer>
-
     </main>
 
+    <div id="gameScreen">
+        <canvas id="game"></canvas>
 
-    <!-- Actual multiplayer game -->
-    <canvas id="game"></canvas>
+        <div class="game-hud">
+            <div class="hud-left">
+                <div class="hud-label">GOLDFISHMAN</div>
+                <div id="score">SIZE: 18</div>
+            </div>
 
-    <script src="/socket.io/socket.io.js"></script>
+            <div class="hud-center" id="gameMode">OFFLINE TEST MODE</div>
+
+            <button id="exitGame" type="button">EXIT</button>
+        </div>
+
+        <div class="game-hint" id="gameHint">
+            MOVE WITH YOUR MOUSE OR WASD
+        </div>
+    </div>
+
     <script src="game.js"></script>
-
 </body>
 </html>

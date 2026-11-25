@@ -3,7 +3,6 @@
 
 :root {
     --water: #e9f7f7;
-    --water-dark: #d9eeee;
     --ink: #344a53;
     --muted: #82969c;
     --orange: #f28b36;
@@ -31,7 +30,9 @@ body {
     font-family: 'Nunito', sans-serif;
 }
 
-/* BACKGROUND */
+/* =================================
+   UNDERWATER BACKGROUND
+================================= */
 
 .underwater {
     position: fixed;
@@ -40,127 +41,54 @@ body {
     z-index: 0;
     pointer-events: none;
     background:
-        radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.75), transparent 68%);
+        radial-gradient(
+            ellipse at 50% 50%,
+            rgba(255,255,255,.75),
+            transparent 68%
+        );
 }
 
 .water-grid {
     position: absolute;
     inset: 0;
     opacity: .55;
+
     background-image:
         linear-gradient(to right, var(--line) 1px, transparent 1px),
         linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+
     background-size: 44px 44px;
 }
 
-/* FISH ARTWORK */
-
-.background-fish {
-    position: absolute;
-    width: 170px;
-    height: 110px;
-    opacity: .88;
-    filter: drop-shadow(0 5px 1px rgba(45, 89, 96, .08));
-    animation: fish-swim 27s linear infinite;
-}
-
-.fish-a {
-    top: 13%;
-    left: -200px;
-    animation-duration: 29s;
-}
-
-.fish-b {
-    top: 68%;
-    left: -200px;
-    animation-duration: 35s;
-    animation-delay: -12s;
-    transform: scale(.75);
-}
-
-.fish-c {
-    top: 37%;
-    left: -200px;
-    animation-duration: 41s;
-    animation-delay: -22s;
-    transform: scale(.55);
-}
-
-.fish-d {
-    top: 83%;
-    left: -200px;
-    animation-duration: 32s;
-    animation-delay: -8s;
-    transform: scale(1.1);
-}
-
-@keyframes fish-swim {
-    0% {
-        left: -220px;
-    }
-
-    100% {
-        left: calc(100% + 220px);
-    }
-}
-
-/* BUBBLES */
-
-.bubble {
-    position: absolute;
-    bottom: -30px;
-    width: 11px;
-    height: 11px;
-    border: 2px solid rgba(64, 168, 190, .35);
-    border-radius: 50%;
-    animation: bubble-rise 14s linear infinite;
-}
-
-.b1 { left: 9%; animation-delay: -2s; }
-.b2 { left: 24%; animation-delay: -9s; }
-.b3 { left: 46%; animation-delay: -5s; }
-.b4 { left: 68%; animation-delay: -12s; }
-.b5 { left: 82%; animation-delay: -3s; }
-.b6 { left: 94%; animation-delay: -7s; }
-
-@keyframes bubble-rise {
-    0% {
-        transform: translateY(0);
-        opacity: 0;
-    }
-
-    15% {
-        opacity: .7;
-    }
-
-    100% {
-        transform: translateY(-110vh);
-        opacity: 0;
-    }
-}
-
-/* NAVIGATION */
+/* =================================
+   TOP NAVIGATION
+================================= */
 
 .topbar {
     position: absolute;
     z-index: 5;
     top: 0;
     left: 0;
+
     width: 100%;
     height: 76px;
     padding: 0 36px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(166, 196, 200, .55);
+
+    border-bottom: 1px solid rgba(166,196,200,.55);
 }
 
 .wordmark {
     display: flex;
     align-items: center;
     gap: 11px;
+
     color: var(--ink);
     text-decoration: none;
+
     font-size: 13px;
     font-weight: 900;
     letter-spacing: 2px;
@@ -169,11 +97,14 @@ body {
 .brand-symbol {
     width: 31px;
     height: 31px;
+
     display: grid;
     place-items: center;
+
     border-radius: 50%;
     color: white;
     background: var(--orange);
+
     font-size: 17px;
     font-weight: 900;
 }
@@ -182,6 +113,7 @@ body {
     display: flex;
     align-items: center;
     gap: 9px;
+
     color: var(--muted);
     font-family: 'DM Mono', monospace;
     font-size: 10px;
@@ -191,21 +123,27 @@ body {
 .status-light {
     width: 8px;
     height: 8px;
+
     background: #d6a64b;
     border-radius: 50%;
 }
 
-/* MAIN MENU */
+/* =================================
+   MAIN MENU
+================================= */
 
 .main-menu {
     position: relative;
     z-index: 2;
+
     width: 100%;
     min-height: 100vh;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     padding: 100px 20px 75px;
 }
 
@@ -217,24 +155,21 @@ body {
 
 .edition {
     display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 12px;
+    align-items: center;
+
     color: var(--muted);
+
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 3px;
 }
 
-.edition-line {
-    width: 27px;
-    height: 1px;
-    background: #a9c4c8;
-}
-
 .welcome h1 {
     margin: 17px 0 0;
+
     color: var(--ink);
+
     font-size: clamp(60px, 9vw, 105px);
     font-weight: 900;
     line-height: .98;
@@ -246,10 +181,11 @@ body {
 }
 
 .welcome h1 sup {
-    display: inline-block;
     position: relative;
     top: -2.6em;
+
     margin-left: 5px;
+
     color: #9aadb1;
     font-size: 12px;
     letter-spacing: 0;
@@ -257,13 +193,17 @@ body {
 
 .tagline {
     margin: 17px 0 0;
+
     color: #788e95;
+
     font-size: 16px;
     font-weight: 700;
     letter-spacing: .3px;
 }
 
-/* JOIN CARD */
+/* =================================
+   JOIN FORM
+================================= */
 
 .entrance {
     width: min(370px, 92vw);
@@ -277,7 +217,9 @@ body {
 
 .join-card > label {
     margin: 0 0 9px 3px;
+
     color: var(--muted);
+
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     letter-spacing: 2px;
@@ -290,15 +232,20 @@ body {
 .name-input input {
     width: 100%;
     height: 57px;
-    padding: 0 72px 0 18px;
+
+    padding: 0 18px;
+
     border: 1px solid #b7d0d3;
     border-radius: 8px;
     outline: none;
+
     background: rgba(255,255,255,.94);
     color: var(--ink);
+
     font-family: 'Nunito', sans-serif;
     font-size: 17px;
     font-weight: 800;
+
     transition: border-color .2s;
 }
 
@@ -310,34 +257,33 @@ body {
     color: #a7b9bd;
 }
 
-.input-count {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #9aadb1;
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-}
-
 /* PLAY BUTTON */
 
 .play-button {
     width: 100%;
     height: 60px;
+
     margin-top: 13px;
     padding: 0 22px;
+
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 12px;
+
     border: 0;
     border-radius: 8px;
+
     background: var(--orange);
     color: white;
+
     cursor: pointer;
+
     font-family: 'Nunito', sans-serif;
-    transition: background .18s, transform .18s;
+
+    transition:
+        background .18s,
+        transform .18s;
 }
 
 .play-button:hover {
@@ -355,42 +301,50 @@ body {
     letter-spacing: 3px;
 }
 
-.play-button svg {
-    width: 20px;
-    height: 20px;
-}
-
 #error {
     min-height: 18px;
+
     margin: 7px 0 0;
+
     color: #c64d45;
     font-size: 12px;
     text-align: center;
 }
 
-/* CONTROLS NOTE */
+/* CONTROLS */
 
 .controls-note {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 9px;
     margin-top: 16px;
+
     color: #8ba0a5;
+
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     letter-spacing: .7px;
+    text-align: center;
 }
 
-.note-divider {
-    color: var(--orange);
+/* OFFLINE HINT */
+
+.offline-hint {
+    margin-top: 24px;
+
+    color: #9aadb1;
+
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-align: center;
 }
 
-/* SETTINGS */
+/* =================================
+   SETTINGS
+================================= */
 
 .settings {
     position: fixed;
     z-index: 10;
+
     bottom: 27px;
     left: 30px;
 }
@@ -398,14 +352,22 @@ body {
 .settings summary {
     width: 56px;
     height: 56px;
+
     display: grid;
     place-items: center;
+
     list-style: none;
+
     border: 1px solid #b7d0d3;
     border-radius: 8px;
+
     background: rgba(255,255,255,.9);
+
     cursor: pointer;
-    transition: border-color .2s, background .2s;
+
+    transition:
+        border-color .2s,
+        background .2s;
 }
 
 .settings summary::-webkit-details-marker {
@@ -417,53 +379,43 @@ body {
     background: white;
 }
 
-.settings summary svg {
-    width: 25px;
-    height: 25px;
-    fill: none;
-    stroke: #71868d;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+.gear {
+    color: #71868d;
+    font-size: 30px;
+    line-height: 1;
 }
 
 .settings-panel {
     position: absolute;
+
     left: 0;
     bottom: 68px;
+
     width: 255px;
     padding: 20px;
+
     border: 1px solid #c2d9dc;
     border-radius: 9px;
+
     background: white;
-    box-shadow: 0 12px 35px rgba(48, 84, 93, .12);
+
+    box-shadow: 0 12px 35px rgba(48,84,93,.12);
 }
 
-.settings-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-}
-
-.settings-heading h2 {
-    margin: 0;
+.settings-panel h2 {
+    margin: 0 0 14px;
     font-size: 20px;
-}
-
-.settings-heading span {
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 8px;
-    letter-spacing: 1px;
 }
 
 .settings-panel label {
     min-height: 43px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     border-top: 1px solid #e7eff0;
+
     color: #637a82;
     font-size: 13px;
     font-weight: 700;
@@ -472,67 +424,163 @@ body {
 .settings-panel input {
     width: 17px;
     height: 17px;
+
     accent-color: var(--orange);
+    cursor: pointer;
 }
 
-/* FOOTER */
+/* =================================
+   FOOTER
+================================= */
 
 .footer {
     position: fixed;
     z-index: 3;
+
     right: 0;
     bottom: 0;
     left: 0;
+
     min-height: 55px;
     padding: 0 32px;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid rgba(166, 196, 200, .55);
+
+    border-top: 1px solid rgba(166,196,200,.55);
+
     color: #91a6aa;
+
     font-family: 'DM Mono', monospace;
     font-size: 9px;
     letter-spacing: 1px;
 }
 
-.footer-center {
-    color: #a1b5b8;
+/* =================================
+   GAME SCREEN
+================================= */
+
+#gameScreen {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 20;
+
+    background: #e9f7f7;
 }
 
-/* GAME CANVAS */
-
 #game {
-    position: fixed;
-    z-index: 1;
-    inset: 0;
-    display: none;
+    display: block;
+
     width: 100%;
     height: 100%;
 }
 
-/* HIDE MENU WHEN PLAYING */
+/* GAME HUD */
 
-body.playing .main-menu {
-    display: none;
+.game-hud {
+    position: absolute;
+
+    top: 18px;
+    left: 18px;
+    right: 18px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    pointer-events: none;
 }
 
-body.playing .topbar {
-    display: none;
+.hud-left,
+.hud-center,
+#exitGame {
+    padding: 12px 16px;
+
+    border: 1px solid #c6dcdf;
+    border-radius: 8px;
+
+    background: rgba(255,255,255,.94);
 }
 
-body.playing #game {
-    display: block;
+.hud-label {
+    color: var(--orange);
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
 }
 
-/* BACKGROUND FISH SETTING */
+#score {
+    margin-top: 4px;
+
+    color: var(--ink);
+
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.hud-center {
+    color: #279c84;
+
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+#exitGame {
+    color: var(--ink);
+
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+#exitGame:hover {
+    border-color: var(--orange);
+}
+
+.game-hint {
+    position: absolute;
+
+    bottom: 20px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    padding: 10px 16px;
+
+    border-radius: 6px;
+
+    background: rgba(255,255,255,.9);
+    color: #71868d;
+
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+/* =================================
+   SETTINGS TOGGLES
+================================= */
 
 body.hide-fish .background-fish {
     display: none;
 }
 
-/* MOBILE */
+/* =================================
+   MOBILE
+================================= */
 
 @media (max-width: 600px) {
+
     .topbar {
         height: 62px;
         padding: 0 17px;
@@ -581,9 +629,8 @@ body.hide-fish .background-fish {
         height: 43px;
     }
 
-    .settings summary svg {
-        width: 21px;
-        height: 21px;
+    .gear {
+        font-size: 24px;
     }
 
     .footer {
@@ -593,16 +640,29 @@ body.hide-fish .background-fish {
         font-size: 7px;
     }
 
-    .footer-center {
+    .footer span:nth-child(2) {
         display: none;
     }
 
-    .background-fish {
-        opacity: .55;
+    .game-hud {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+    }
+
+    .hud-center {
+        display: none;
+    }
+
+    .game-hint {
+        bottom: 12px;
+        font-size: 8px;
     }
 }
 
-/* ACCESSIBILITY */
+/* =================================
+   ACCESSIBILITY
+================================= */
 
 @media (prefers-reduced-motion: reduce) {
     *,

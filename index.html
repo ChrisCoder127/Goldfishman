@@ -3,111 +3,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#e9f7f7">
-    <title>GoldfishMan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoldfishMan - Underwater FFA</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="underwater" aria-hidden="true">
-        <div class="water-grid"></div>
+    <div id="mainMenu">
+        <div class="menu-content">
+            <div class="logo">GOLDFISH<span>MAN</span></div>
+            <p>UNDERWATER FREE-FOR-ALL</p>
+
+            <input id="username" maxlength="16" value="Goldfish"
+                placeholder="Fish name">
+
+            <button id="play">ENTER THE ARENA</button>
+
+            <p id="error"></p>
+            <small>WASD TO SWIM · MOUSE TO AIM</small>
+        </div>
     </div>
-
-    <header class="topbar">
-        <a class="wordmark" href="/">
-            <span class="brand-symbol">G</span>
-            <span>GOLDFISHMAN</span>
-        </a>
-
-        <div class="server-status">
-            <span class="status-light" id="connectionDot"></span>
-            <span id="connection">OFFLINE</span>
-        </div>
-    </header>
-
-    <main class="main-menu" id="mainMenu">
-
-        <section class="welcome">
-            <div class="edition">THE OCEAN IS YOURS</div>
-            <h1>Goldfish<span>Man</span></h1>
-            <p class="tagline">Find your place in the food chain.</p>
-        </section>
-
-        <section class="entrance">
-            <form id="joinForm" class="join-card">
-                <label for="username">YOUR PLAYER NAME</label>
-
-                <div class="name-input">
-                    <input
-                        id="username"
-                        type="text"
-                        maxlength="16"
-                        value="Goldfish"
-                        placeholder="Enter a name..."
-                        autocomplete="nickname"
-                    >
-                </div>
-
-                <button id="play" class="play-button" type="submit">
-                    <span class="play-button-text">PLAY</span>
-                    <span aria-hidden="true">▶</span>
-                </button>
-
-                <p id="error" role="status"></p>
-
-                <div class="controls-note">
-                    WASD / ARROW KEYS / MOUSE
-                </div>
-            </form>
-        </section>
-
-        <div class="offline-hint" id="offlineHint">
-            PRESS CTRL + ALT + I TO ENABLE OFFLINE TEST MODE
-        </div>
-
-        <details class="settings" id="settings">
-            <summary aria-label="Open settings">
-                <span class="gear">⚙</span>
-            </summary>
-
-            <div class="settings-panel">
-                <h2>Settings</h2>
-                <label>
-                    <span>Background fish</span>
-                    <input type="checkbox" id="showFish" checked>
-                </label>
-                <label>
-                    <span>Sound</span>
-                    <input type="checkbox" id="sound" checked>
-                </label>
-            </div>
-        </details>
-
-        <footer class="footer">
-            <span>GOLDFISHMAN.COM</span>
-            <span>SWIM. GROW. SURVIVE.</span>
-            <span>TEST BUILD</span>
-        </footer>
-    </main>
 
     <div id="gameScreen">
         <canvas id="game"></canvas>
 
-        <div class="game-hud">
-            <div class="hud-left">
-                <div class="hud-label">GOLDFISHMAN</div>
-                <div id="score">SIZE: 18</div>
+        <header class="hud">
+            <div class="hud-box">
+                <strong id="playerName">GOLDFISH</strong>
+                <div class="health-track">
+                    <div id="healthBar"></div>
+                </div>
+                <span id="healthText">100 HP</span>
             </div>
 
-            <div class="hud-center" id="gameMode">OFFLINE TEST MODE</div>
+            <div class="hud-box stats">
+                <span id="kills">KILLS: 0</span>
+                <span id="ammo">AMMO: 12 / 12</span>
+            </div>
 
-            <button id="exitGame" type="button">EXIT</button>
+            <button id="exitGame">EXIT</button>
+        </header>
+
+        <div class="inventory" id="inventory">
+            <div class="slot selected" data-slot="1">
+                <span class="slot-number">1</span>
+                <span class="slot-icon">🔫</span>
+                <span>GUN</span>
+            </div>
+            <div class="slot" data-slot="2">
+                <span class="slot-number">2</span>
+                <span class="slot-icon">✊</span>
+                <span>FISTS</span>
+            </div>
+            <div class="slot" data-slot="3">
+                <span class="slot-number">3</span>
+                <span class="slot-icon">▦</span>
+                <span>BLOCKS</span>
+                <small id="blockCount">30</small>
+            </div>
         </div>
 
-        <div class="game-hint" id="gameHint">
-            MOVE WITH YOUR MOUSE OR WASD
-        </div>
+        <div id="message"></div>
     </div>
 
     <script src="game.js"></script>

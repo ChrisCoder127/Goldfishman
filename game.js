@@ -1,509 +1,710 @@
 
 "use strict";
 
-// ========================================
-// GOLDFISHMAN - OFFLINE TEST GAME
-// No libraries or external packages needed.
-// ========================================
-
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-const mainMenu = document.getElementById("mainMenu");
-const gameScreen = document.getElementById("gameScreen");
-const joinForm = document.getElementById("joinForm");
-const usernameInput = document.getElementById("username");
-const errorText = document.getElementById("error");
-const offlineHint = document.getElementById("offlineHint");
-const connection = document.getElementById("connection");
-const connectionDot = document.getElementById("connectionDot");
-const scoreText = document.getElementById("score");
-const exitButton = document.getElementById("exitGame");
+const menu = document.getElementById("mainMenu");
+const screen = document.getElementById("gameScreen");
+const username = document.getElementById("username");
 
-const WORLD = 3000;
-const FOOD_AMOUNT = 400;
-const BOT_AMOUNT = 12;
+const healthBar = document.getElementById("healthBar");
+const healthText = document.getElementById("healthText");
+const killsText = document.getElementById("kills");
+const ammoText = document.getElementById("ammo");
+const blockCount = document.getElementById("blockCount");
+const message = document.getElementById("message");
 
-let offlineMode = false;
-let playing = false;
-let animationFrame = null;
+const WORLD = 3200;
+const BOT_COUNT = 12;
+const FOOD_COUNT = 300;
+const BLOCK_LIMIT = 40;
 
-let foods = [];
+let running = false;
+let animationId;
+let lastTime = 0;
+
+let player;
 let bots = [];
+let foods = [];
+let bullets = [];
+let blocks = [];
 
-let player = null;
+let selected = 1;
+let mouseDown = false;
+let mouse = { x: 0, y: 0 };
+let camera = { x: WORLD / 2, y: WORLD / 2 };
 
-let camera = {
-    x: 0,
-    y: 0
-};
+let keys = {};
+let kills = 0;
+let blockInventory = 30;
 
-let mouse = {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2
-};
+let ammo = 12;
+const MAGAZINE = 12;
+let reloading = false;
 
-const keys = {};
+let nextId = 1;
 
-const colors = [
-    "#f28b36",
-    "#36bfa6",
-    "#63a9d5",
-    "#e9a5b2",
-    "#b28cff",
-    "#e9bd48",
-    "#ed7650",
-    "#4bc5c5"
+const COLORS = [
+    "#ff9c42", "#ff6385", "#42d6b5",
+    "#64b8ed", "#b58bff", "#e8c05c",
+    "#ff7959", "#52c6cf"
 ];
 
-// ========================================
-// CANVAS SIZE
-// ========================================
-
-function resizeCanvas() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-
-    canvas.style.width = window.innerWidth + "px";
-    canvas.style.height = window.innerHeight + "px";
-
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
-
-// ========================================
-// HELPERS
-// ========================================
-
-function random(min, max) {
+function rand(min, max) {
     return Math.random() * (max - min) + min;
-}
-
-function distance(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
 
-function randomColor() {
-    return colors[Math.floor(Math.random() * colors.length)];
+function distance(a, b) {
+    return Math.hypot(a.x - b.x, a.y - b.y);
 }
 
-// ========================================
-// OFFLINE MODE SHORTCUT
-// CTRL + ALT + I
-// ========================================
-
-document.addEventListener("keydown", (event) => {
-    if (
-        event.ctrlKey &&
-        event.altKey &&
-        event.key.toLowerCase() === "i"
-    ) {
-        event.preventDefault();
-        toggleOfflineMode();
-    }
-});
-
-function toggleOfflineMode() {
-    offlineMode = !offlineMode;
-
-    if (offlineMode) {
-        connection.textContent = "OFFLINE TEST MODE";
-        connectionDot.style.background = "#36bfa6";
-        offlineHint.textContent = "OFFLINE MODE ENABLED — READY TO TEST";
-        offlineHint.style.color = "#279c84";
-
-        errorText.textContent = "";
-    } else {
-        connection.textContent = "OFFLINE";
-        connectionDot.style.background = "#d6a64b";
-        offlineHint.textContent =
-            "PRESS CTRL + ALT + I TO ENABLE OFFLINE TEST MODE";
-
-        if (playing) {
-            stopGame();
-        }
-    }
+function color() {
+    return COLORS[Math.floor(Math.random() * COLORS.length)];
 }
 
-// ========================================
-// FOOD
-// ========================================
+// ======================================
+// CANVAS
+// ======================================
 
-function createFood() {
-    return {
-        x: random(30, WORLD - 30),
-        y: random(30, WORLD - 30),
-        radius: random(4, 7),
-        color: randomColor()
-    };
+function resize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+
+    canvas.width = innerWidth * dpr;
+    canvas.height = innerHeight * dpr;
+
+    canvas.style.width = innerWidth + "px";
+    canvas.style.height = innerHeight + "px";
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-function createFoods() {
-    foods = [];
+addEventListener("resize", resize);
+resize();
 
-    for (let i = 0; i < FOOD_AMOUNT; i++) {
-        foods.push(createFood());
-    }
-}
-
-// ========================================
+// ======================================
 // PLAYER
-// ========================================
+// ======================================
 
-function createPlayer(name) {
+function makeFish(name, isPlayer = false) {
     return {
-        name: name,
-        x: WORLD / 2,
-        y: WORLD / 2,
-        radius: 18,
-        color: "#ff9c32",
-        speed: 4.2
+        id: nextId++,
+        name,
+        x: rand(150, WORLD - 150),
+        y: rand(150, WORLD - 150),
+        radius: isPlayer ? 25 : rand(18, 32),
+        angle: 0,
+        color: isPlayer ? "#ff9c42" : color(),
+        health: 100,
+        maxHealth: 100,
+        speed: isPlayer ? 3.8 : rand(2, 3.1),
+        isPlayer,
+        alive: true,
+        aiTimer: 0,
+        targetX: rand(0, WORLD),
+        targetY: rand(0, WORLD),
+        fireTimer: rand(40, 100),
+        attackTimer: 0,
+        invincible: 0
     };
 }
 
-// ========================================
-// BOTS
-// ========================================
-
-function createBot(index) {
-    return {
-        name: "Bot " + (index + 1),
-        x: random(100, WORLD - 100),
-        y: random(100, WORLD - 100),
-        radius: random(16, 36),
-        color: randomColor(),
-        targetX: random(0, WORLD),
-        targetY: random(0, WORLD),
-        thinkTime: random(30, 100),
-        personality: Math.random(),
-        speed: random(1.5, 2.7)
-    };
-}
-
-function createBots() {
-    bots = [];
-
-    for (let i = 0; i < BOT_AMOUNT; i++) {
-        bots.push(createBot(i));
-    }
-}
-
-// ========================================
-// START / EXIT
-// ========================================
-
-joinForm.addEventListener("submit", (event) => {
-    event.preventDefault();
-
-    if (!offlineMode) {
-        errorText.textContent =
-            "Enable Offline Test Mode first: CTRL + ALT + I";
-        return;
-    }
-
-    const name = usernameInput.value.trim().slice(0, 16);
+function startGame() {
+    const name = username.value.trim().slice(0, 16);
 
     if (!name) {
-        errorText.textContent = "Enter a player name.";
+        document.getElementById("error").textContent =
+            "Enter your fish name first.";
         return;
     }
 
-    startGame(name);
+    player = makeFish(name, true);
+    player.x = WORLD / 2;
+    player.y = WORLD / 2;
+
+    bots = [];
+    foods = [];
+    bullets = [];
+    blocks = [];
+
+    kills = 0;
+    ammo = MAGAZINE;
+    blockInventory = 30;
+    selected = 1;
+    reloading = false;
+
+    for (let i = 0; i < BOT_COUNT; i++) {
+        bots.push(makeFish("Fish_" + (i + 1)));
+    }
+
+    for (let i = 0; i < FOOD_COUNT; i++) {
+        foods.push({
+            x: rand(0, WORLD),
+            y: rand(0, WORLD),
+            radius: rand(3, 6),
+            color: color()
+        });
+    }
+
+    menu.style.display = "none";
+    screen.style.display = "block";
+
+    updateInventory();
+    updateHUD();
+
+    running = true;
+    lastTime = performance.now();
+    animationId = requestAnimationFrame(loop);
+}
+
+document.getElementById("play").addEventListener("click", startGame);
+
+document.getElementById("exitGame").addEventListener("click", () => {
+    running = false;
+    cancelAnimationFrame(animationId);
+    screen.style.display = "none";
+    menu.style.display = "grid";
 });
 
-function startGame(name) {
-    player = createPlayer(name);
+// ======================================
+// INPUT
+// ======================================
 
-    createFoods();
-    createBots();
+addEventListener("keydown", event => {
+    const key = event.key.toLowerCase();
 
-    playing = true;
-
-    mainMenu.style.display = "none";
-    gameScreen.style.display = "block";
-
-    camera.x = player.x;
-    camera.y = player.y;
-
-    errorText.textContent = "";
-
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
+    if (
+        ["w", "a", "s", "d", " "].includes(key) ||
+        key.startsWith("arrow")
+    ) {
+        event.preventDefault();
     }
 
-    gameLoop();
-}
+    keys[key] = true;
 
-function stopGame() {
-    playing = false;
+    if (key === "1") selectSlot(1);
+    if (key === "2") selectSlot(2);
+    if (key === "3") selectSlot(3);
 
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = null;
-    }
+    if (key === "r") reload();
+});
 
-    gameScreen.style.display = "none";
-    mainMenu.style.display = "flex";
-}
+addEventListener("keyup", event => {
+    keys[event.key.toLowerCase()] = false;
+});
 
-exitButton.addEventListener("click", stopGame);
-
-// ========================================
-// MOVEMENT INPUT
-// ========================================
-
-window.addEventListener("mousemove", (event) => {
+canvas.addEventListener("mousemove", event => {
     mouse.x = event.clientX;
     mouse.y = event.clientY;
 });
 
-window.addEventListener("keydown", (event) => {
-    keys[event.key.toLowerCase()] = true;
+canvas.addEventListener("mousedown", event => {
+    if (event.button === 0) {
+        mouseDown = true;
+        useWeapon();
+    }
+
+    if (event.button === 2) {
+        placeBlock();
+    }
 });
 
-window.addEventListener("keyup", (event) => {
-    keys[event.key.toLowerCase()] = false;
+addEventListener("mouseup", event => {
+    if (event.button === 0) mouseDown = false;
 });
 
-function updatePlayer() {
+canvas.addEventListener("contextmenu", event => {
+    event.preventDefault();
+});
+
+document.querySelectorAll(".slot").forEach(slot => {
+    slot.addEventListener("click", () => {
+        selectSlot(Number(slot.dataset.slot));
+    });
+});
+
+// ======================================
+// INVENTORY
+// ======================================
+
+function selectSlot(number) {
+    selected = number;
+    updateInventory();
+}
+
+function updateInventory() {
+    document.querySelectorAll(".slot").forEach(slot => {
+        slot.classList.toggle(
+            "selected",
+            Number(slot.dataset.slot) === selected
+        );
+    });
+
+    blockCount.textContent = blockInventory;
+}
+
+function updateHUD() {
     if (!player) return;
 
-    let dx = 0;
-    let dy = 0;
+    const health = clamp(player.health, 0, 100);
 
-    if (keys["w"] || keys["arrowup"]) dy -= 1;
-    if (keys["s"] || keys["arrowdown"]) dy += 1;
-    if (keys["a"] || keys["arrowleft"]) dx -= 1;
-    if (keys["d"] || keys["arrowright"]) dx += 1;
+    healthBar.style.width = health + "%";
+    healthText.textContent = Math.ceil(health) + " HP";
 
-    if (dx === 0 && dy === 0) {
-        const targetX = mouse.x - window.innerWidth / 2;
-        const targetY = mouse.y - window.innerHeight / 2;
+    killsText.textContent = "KILLS: " + kills;
+    ammoText.textContent =
+        "AMMO: " + ammo + " / " + MAGAZINE;
 
-        dx = targetX;
-        dy = targetY;
-    }
+    blockCount.textContent = blockInventory;
+}
 
-    const length = Math.hypot(dx, dy);
+// ======================================
+// AIMING
+// ======================================
 
-    if (length > 5) {
-        const speed = Math.max(
-            1.4,
-            player.speed - player.radius * 0.012
-        );
+function getAimAngle() {
+    const screenX = player.x - camera.x + innerWidth / 2;
+    const screenY = player.y - camera.y + innerHeight / 2;
 
-        player.x += (dx / length) * speed;
-        player.y += (dy / length) * speed;
-    }
-
-    player.x = clamp(
-        player.x,
-        player.radius,
-        WORLD - player.radius
-    );
-
-    player.y = clamp(
-        player.y,
-        player.radius,
-        WORLD - player.radius
+    return Math.atan2(
+        mouse.y - screenY,
+        mouse.x - screenX
     );
 }
 
-// ========================================
+// ======================================
+// PLAYER MOVEMENT
+// ======================================
+
+function movePlayer(dt) {
+    let dx = 0;
+    let dy = 0;
+
+    if (keys.w || keys.arrowup) dy--;
+    if (keys.s || keys.arrowdown) dy++;
+    if (keys.a || keys.arrowleft) dx--;
+    if (keys.d || keys.arrowright) dx++;
+
+    const length = Math.hypot(dx, dy);
+
+    if (length > 0) {
+        dx /= length;
+        dy /= length;
+
+        player.x += dx * player.speed * dt;
+        player.y += dy * player.speed * dt;
+
+        player.angle = Math.atan2(dy, dx);
+    } else {
+        player.angle = getAimAngle();
+    }
+
+    player.x = clamp(player.x, player.radius, WORLD - player.radius);
+    player.y = clamp(player.y, player.radius, WORLD - player.radius);
+}
+
+// ======================================
 // BOT AI
-// ========================================
+// ======================================
 
-function updateBots() {
+function updateBots(dt) {
     for (const bot of bots) {
-        bot.thinkTime--;
+        bot.aiTimer -= dt;
+        bot.fireTimer -= dt;
 
-        if (bot.thinkTime <= 0) {
-            bot.thinkTime = random(35, 110);
+        let target = null;
 
-            bot.targetX = random(0, WORLD);
-            bot.targetY = random(0, WORLD);
+        if (distance(bot, player) < 750) {
+            target = player;
+        }
 
-            // Larger bots sometimes chase the player.
-            if (
-                player &&
-                bot.radius > player.radius * 1.2 &&
-                Math.random() < 0.55
-            ) {
-                bot.targetX = player.x;
-                bot.targetY = player.y;
-            }
+        if (bot.aiTimer <= 0) {
+            bot.aiTimer = rand(40, 100);
 
-            // Smaller bots try to escape larger players.
-            if (
-                player &&
-                player.radius > bot.radius * 1.2 &&
-                Math.random() < 0.7
-            ) {
-                bot.targetX = clamp(
-                    bot.x + (bot.x - player.x) * 3,
-                    0,
-                    WORLD
-                );
-
-                bot.targetY = clamp(
-                    bot.y + (bot.y - player.y) * 3,
-                    0,
-                    WORLD
-                );
+            if (target && Math.random() < 0.65) {
+                bot.targetX = target.x + rand(-120, 120);
+                bot.targetY = target.y + rand(-120, 120);
+            } else {
+                bot.targetX = rand(100, WORLD - 100);
+                bot.targetY = rand(100, WORLD - 100);
             }
         }
 
         let dx = bot.targetX - bot.x;
         let dy = bot.targetY - bot.y;
-
         const length = Math.hypot(dx, dy);
 
-        if (length > 2) {
-            const speed = bot.speed * Math.max(
-                0.65,
-                1 - bot.radius * 0.008
-            );
+        if (length > 3) {
+            dx /= length;
+            dy /= length;
 
-            bot.x += (dx / length) * speed;
-            bot.y += (dy / length) * speed;
+            bot.x += dx * bot.speed * dt;
+            bot.y += dy * bot.speed * dt;
+
+            bot.angle = Math.atan2(dy, dx);
         }
 
         bot.x = clamp(bot.x, bot.radius, WORLD - bot.radius);
         bot.y = clamp(bot.y, bot.radius, WORLD - bot.radius);
-    }
-}
 
-// ========================================
-// EATING FOOD
-// ========================================
-
-function updateFoodCollisions() {
-    const creatures = [player, ...bots].filter(Boolean);
-
-    for (const creature of creatures) {
-        for (let i = foods.length - 1; i >= 0; i--) {
-            const food = foods[i];
-
-            if (
-                distance(creature, food) <
-                creature.radius + food.radius
-            ) {
-                creature.radius = Math.min(
-                    250,
-                    creature.radius + 0.7
-                );
-
-                foods.splice(i, 1);
-            }
+        // Bots occasionally shoot at the player.
+        if (
+            target &&
+            bot.fireTimer <= 0 &&
+            distance(bot, player) < 600
+        ) {
+            bot.fireTimer = rand(90, 150);
+            fireBullet(bot, player, false);
         }
     }
+}
 
-    while (foods.length < FOOD_AMOUNT) {
-        foods.push(createFood());
+// ======================================
+// WEAPONS
+// ======================================
+
+function useWeapon() {
+    if (!running) return;
+
+    if (selected === 1) {
+        shoot();
+    } else if (selected === 2) {
+        punch();
     }
 }
 
-// ========================================
-// EATING OTHER FISH
-// ========================================
-
-function eatCreature(eater, victim) {
-    if (eater.radius <= victim.radius * 1.15) {
-        return false;
+function shoot() {
+    if (reloading || ammo <= 0) {
+        if (ammo <= 0) reload();
+        return;
     }
 
-    if (
-        distance(eater, victim) <
-        eater.radius * 0.78
-    ) {
-        eater.radius = Math.min(
-            250,
-            eater.radius + victim.radius * 0.22
-        );
+    ammo--;
 
-        return true;
-    }
+    const angle = getAimAngle();
 
-    return false;
+    bullets.push({
+        x: player.x + Math.cos(angle) * (player.radius + 12),
+        y: player.y + Math.sin(angle) * (player.radius + 12),
+        vx: Math.cos(angle) * 12,
+        vy: Math.sin(angle) * 12,
+        owner: player.id,
+        damage: 25,
+        life: 65,
+        radius: 5
+    });
+
+    updateHUD();
 }
 
-function updateEating() {
+function fireBullet(shooter, target, isPlayer) {
+    const angle = Math.atan2(
+        target.y - shooter.y,
+        target.x - shooter.x
+    );
+
+    bullets.push({
+        x: shooter.x + Math.cos(angle) * shooter.radius,
+        y: shooter.y + Math.sin(angle) * shooter.radius,
+        vx: Math.cos(angle) * 9,
+        vy: Math.sin(angle) * 9,
+        owner: shooter.id,
+        damage: 12,
+        life: 80,
+        radius: 4
+    });
+}
+
+function reload() {
+    if (reloading || ammo === MAGAZINE) return;
+
+    reloading = true;
+    showMessage("RELOADING...");
+
+    setTimeout(() => {
+        if (!running) return;
+
+        ammo = MAGAZINE;
+        reloading = false;
+        updateHUD();
+    }, 1200);
+}
+
+function punch() {
+    const angle = getAimAngle();
+
+    const targetX = player.x + Math.cos(angle) * 55;
+    const targetY = player.y + Math.sin(angle) * 55;
+
     for (let i = bots.length - 1; i >= 0; i--) {
         const bot = bots[i];
 
-        // Player eats bots.
-        if (eatCreature(player, bot)) {
-            bots.splice(i, 1);
-            continue;
+        if (
+            Math.hypot(bot.x - targetX, bot.y - targetY) <
+            bot.radius + 30
+        ) {
+            damageFish(bot, 25, player);
+            break;
         }
+    }
 
-        // Bots eat each other.
-        for (let j = bots.length - 1; j >= 0; j--) {
-            if (i === j) continue;
+    hitBlockAt(targetX, targetY);
+}
 
-            const other = bots[j];
+// ======================================
+// BULLET UPDATES
+// ======================================
 
-            if (eatCreature(bot, other)) {
-                bots.splice(j, 1);
+function updateBullets(dt) {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const bullet = bullets[i];
 
-                if (j < i) i--;
+        bullet.x += bullet.vx * dt;
+        bullet.y += bullet.vy * dt;
+        bullet.life -= dt;
+
+        let removed = bullet.life <= 0;
+
+        // Hit blocks.
+        for (const block of blocks) {
+            if (
+                bullet.x > block.x - block.size / 2 &&
+                bullet.x < block.x + block.size / 2 &&
+                bullet.y > block.y - block.size / 2 &&
+                bullet.y < block.y + block.size / 2
+            ) {
+                damageBlock(block);
+                removed = true;
+                break;
             }
         }
 
-        // Bots can eat the player.
-        if (
-            player &&
-            eatCreature(bot, player)
-        ) {
-            player.radius = 18;
-            player.x = WORLD / 2;
-            player.y = WORLD / 2;
+        if (!removed) {
+            const targets = [player, ...bots];
 
-            scoreText.textContent = "YOU WERE EATEN! SIZE: 18";
+            for (const target of targets) {
+                if (!target || !target.alive) continue;
+                if (target.id === bullet.owner) continue;
+
+                if (
+                    Math.hypot(
+                        bullet.x - target.x,
+                        bullet.y - target.y
+                    ) < target.radius
+                ) {
+                    const owner = bullet.owner === player.id
+                        ? player
+                        : bots.find(b => b.id === bullet.owner);
+
+                    damageFish(target, bullet.damage, owner);
+                    removed = true;
+                    break;
+                }
+            }
         }
-    }
 
-    // Replace bots that were eaten.
-    while (bots.length < BOT_AMOUNT) {
-        bots.push(createBot(bots.length));
+        if (removed) bullets.splice(i, 1);
     }
 }
 
-// ========================================
+// ======================================
+// FISH DAMAGE AND RESPAWNING
+// ======================================
+
+function damageFish(target, amount, attacker) {
+    if (!target || target.invincible > 0) return;
+
+    target.health -= amount;
+
+    if (target.health <= 0) {
+        if (target === player) {
+            respawnPlayer();
+        } else {
+            if (attacker === player) {
+                kills++;
+                showMessage("FISH ELIMINATED!");
+            }
+
+            const index = bots.indexOf(target);
+            if (index !== -1) {
+                bots.splice(index, 1);
+                bots.push(makeFish("Fish_" + (bots.length + 1)));
+            }
+        }
+    }
+
+    updateHUD();
+}
+
+function respawnPlayer() {
+    showMessage("YOU WERE ELIMINATED!");
+
+    player.health = 100;
+    player.x = WORLD / 2;
+    player.y = WORLD / 2;
+    player.invincible = 120;
+
+    ammo = MAGAZINE;
+    updateHUD();
+}
+
+// ======================================
+// BUILDING BLOCKS
+// ======================================
+
+function placeBlock() {
+    if (!running || selected !== 3) return;
+    if (blockInventory <= 0) {
+        showMessage("NO BLOCKS LEFT!");
+        return;
+    }
+
+    const world = screenToWorld(mouse.x, mouse.y);
+
+    if (distance(player, world) > 230) {
+        showMessage("TOO FAR AWAY!");
+        return;
+    }
+
+    const size = 58;
+
+    const collision = blocks.some(block =>
+        Math.abs(block.x - world.x) < size &&
+        Math.abs(block.y - world.y) < size
+    );
+
+    if (collision) {
+        showMessage("BLOCK LOCATION TAKEN!");
+        return;
+    }
+
+    blocks.push({
+        x: Math.round(world.x / size) * size,
+        y: Math.round(world.y / size) * size,
+        size,
+        health: 3,
+        maxHealth: 3
+    });
+
+    blockInventory--;
+    updateInventory();
+}
+
+function hitBlockAt(x, y) {
+    for (const block of blocks) {
+        if (
+            Math.abs(block.x - x) < block.size / 2 + 25 &&
+            Math.abs(block.y - y) < block.size / 2 + 25
+        ) {
+            damageBlock(block);
+            return;
+        }
+    }
+}
+
+function damageBlock(block) {
+    block.health--;
+
+    if (block.health <= 0) {
+        blocks.splice(blocks.indexOf(block), 1);
+        showMessage("BLOCK DESTROYED!");
+    }
+}
+
+// ======================================
+// FOOD
+// ======================================
+
+function updateFood() {
+    for (let i = foods.length - 1; i >= 0; i--) {
+        const food = foods[i];
+
+        if (distance(player, food) < player.radius + food.radius) {
+            player.radius = Math.min(65, player.radius + 0.5);
+            foods.splice(i, 1);
+        }
+    }
+
+    while (foods.length < FOOD_COUNT) {
+        foods.push({
+            x: rand(0, WORLD),
+            y: rand(0, WORLD),
+            radius: rand(3, 6),
+            color: color()
+        });
+    }
+}
+
+// ======================================
+// CAMERA
+// ======================================
+
+function screenToWorld(x, y) {
+    return {
+        x: x + camera.x - innerWidth / 2,
+        y: y + camera.y - innerHeight / 2
+    };
+}
+
+function updateCamera(dt) {
+    camera.x += (player.x - camera.x) * Math.min(1, 0.09 * dt);
+    camera.y += (player.y - camera.y) * Math.min(1, 0.09 * dt);
+}
+
+// ======================================
 // DRAWING
-// ========================================
+// ======================================
 
-function drawGrid() {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
+function drawWater() {
+    const width = innerWidth;
+    const height = innerHeight;
 
-    ctx.fillStyle = "#e9f7f7";
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "#08758a");
+    gradient.addColorStop(0.5, "#07516f");
+    gradient.addColorStop(1, "#063b58");
+
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    const gridSize = 50;
+    // Underwater light ripples.
+    const time = performance.now() * 0.0004;
 
-    const offsetX = -camera.x % gridSize;
-    const offsetY = -camera.y % gridSize;
+    ctx.save();
+    ctx.globalAlpha = 0.09;
+    ctx.strokeStyle = "#b4fff0";
+    ctx.lineWidth = 2;
 
-    ctx.strokeStyle = "#d0e4e6";
+    for (let i = 0; i < 14; i++) {
+        const x = ((i * 245 + time * 60) % (width + 200)) - 100;
+        const y = (i * 137 + Math.sin(time + i) * 30) % height;
+
+        ctx.beginPath();
+        ctx.ellipse(x, y, 75, 18, Math.sin(time + i), 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // Subtle arena grid.
+    const grid = 100;
+    const ox = -camera.x % grid;
+    const oy = -camera.y % grid;
+
+    ctx.strokeStyle = "rgba(160,235,231,.10)";
     ctx.lineWidth = 1;
-
     ctx.beginPath();
 
-    for (let x = offsetX; x < width; x += gridSize) {
+    for (let x = ox; x < width; x += grid) {
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
     }
 
-    for (let y = offsetY; y < height; y += gridSize) {
+    for (let y = oy; y < height; y += grid) {
         ctx.moveTo(0, y);
         ctx.lineTo(width, y);
     }
@@ -511,157 +712,258 @@ function drawGrid() {
     ctx.stroke();
 }
 
-function worldToScreen(creature) {
+function worldPosition(object) {
     return {
-        x: creature.x - camera.x + window.innerWidth / 2,
-        y: creature.y - camera.y + window.innerHeight / 2
+        x: object.x - camera.x + innerWidth / 2,
+        y: object.y - camera.y + innerHeight / 2
     };
 }
 
-function drawFish(creature, isPlayer = false) {
-    const position = worldToScreen(creature);
+function drawFish(fish) {
+    const pos = worldPosition(fish);
 
     if (
-        position.x < -creature.radius - 20 ||
-        position.x > window.innerWidth + creature.radius + 20 ||
-        position.y < -creature.radius - 20 ||
-        position.y > window.innerHeight + creature.radius + 20
-    ) {
-        return;
-    }
+        pos.x < -100 || pos.x > innerWidth + 100 ||
+        pos.y < -100 || pos.y > innerHeight + 100
+    ) return;
 
+    const swim = Math.sin(performance.now() * 0.012 + fish.id) * 0.14;
+
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.rotate(fish.angle + swim * 0.15);
+
+    // Tail animation.
+    ctx.fillStyle = fish.color;
     ctx.beginPath();
-    ctx.arc(
-        position.x,
-        position.y,
-        creature.radius,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fillStyle = creature.color;
+    ctx.moveTo(-fish.radius * 0.55, 0);
+    ctx.lineTo(-fish.radius * 1.5, -fish.radius * (0.65 + swim));
+    ctx.lineTo(-fish.radius * 1.5, fish.radius * (0.65 + swim));
+    ctx.closePath();
     ctx.fill();
 
-    ctx.lineWidth = isPlayer ? 4 : 2;
-    ctx.strokeStyle = "rgba(40, 65, 75, 0.18)";
+    // Fins.
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath();
+    ctx.moveTo(-fish.radius * 0.15, -fish.radius * 0.5);
+    ctx.lineTo(fish.radius * 0.25, -fish.radius * 1.0);
+    ctx.lineTo(fish.radius * 0.65, -fish.radius * 0.45);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-fish.radius * 0.15, fish.radius * 0.5);
+    ctx.lineTo(fish.radius * 0.25, fish.radius * 1.0);
+    ctx.lineTo(fish.radius * 0.65, fish.radius * 0.45);
+    ctx.fill();
+
+    ctx.globalAlpha = 1;
+
+    // Main body.
+    ctx.beginPath();
+    ctx.ellipse(0, 0, fish.radius, fish.radius * 0.68, 0, 0, Math.PI * 2);
+    ctx.fillStyle = fish.color;
+    ctx.fill();
+
+    ctx.lineWidth = fish.isPlayer ? 3 : 1.5;
+    ctx.strokeStyle = "#ffffff66";
     ctx.stroke();
 
-    // Fish eye.
-    ctx.beginPath();
-    ctx.arc(
-        position.x + creature.radius * 0.35,
-        position.y - creature.radius * 0.18,
-        Math.max(2, creature.radius * 0.12),
-        0,
-        Math.PI * 2
-    );
+    // Scales.
+    ctx.strokeStyle = "#ffffff40";
+    ctx.lineWidth = 1;
 
-    ctx.fillStyle = "#263b43";
+    for (let i = -1; i <= 1; i++) {
+        ctx.beginPath();
+        ctx.arc(i * fish.radius * 0.25, 0, fish.radius * 0.3, -1.1, 1.1);
+        ctx.stroke();
+    }
+
+    // Eye.
+    ctx.beginPath();
+    ctx.arc(fish.radius * 0.56, -fish.radius * 0.16, Math.max(2, fish.radius * 0.12), 0, Math.PI * 2);
+    ctx.fillStyle = "#122c39";
     ctx.fill();
 
     ctx.beginPath();
-    ctx.arc(
-        position.x + creature.radius * 0.39,
-        position.y - creature.radius * 0.22,
-        Math.max(1, creature.radius * 0.045),
-        0,
-        Math.PI * 2
-    );
-
+    ctx.arc(fish.radius * 0.59, -fish.radius * 0.2, Math.max(1, fish.radius * 0.04), 0, Math.PI * 2);
     ctx.fillStyle = "white";
     ctx.fill();
 
-    // Player/bot name.
-    ctx.fillStyle = "#344a53";
-    ctx.font = "bold 13px Nunito, Arial";
-    ctx.textAlign = "center";
+    ctx.restore();
 
-    ctx.fillText(
-        creature.name,
-        position.x,
-        position.y + creature.radius + 19
-    );
+    // Health indicator.
+    if (!fish.isPlayer) {
+        const barWidth = fish.radius * 2;
+        const hp = clamp(fish.health / fish.maxHealth, 0, 1);
+
+        ctx.fillStyle = "#062b3b99";
+        ctx.fillRect(pos.x - barWidth / 2, pos.y - fish.radius - 14, barWidth, 4);
+
+        ctx.fillStyle = "#49e2a2";
+        ctx.fillRect(pos.x - barWidth / 2, pos.y - fish.radius - 14, barWidth * hp, 4);
+    }
+
+    ctx.fillStyle = "white";
+    ctx.font = "bold 12px Nunito, Arial";
+    ctx.textAlign = "center";
+    ctx.shadowColor = "#002c3b";
+    ctx.shadowBlur = 5;
+    ctx.fillText(fish.name, pos.x, pos.y + fish.radius + 18);
+    ctx.shadowBlur = 0;
 }
 
 function drawFoods() {
     for (const food of foods) {
-        const position = worldToScreen(food);
+        const pos = worldPosition(food);
 
         if (
-            position.x < -20 ||
-            position.x > window.innerWidth + 20 ||
-            position.y < -20 ||
-            position.y > window.innerHeight + 20
-        ) {
-            continue;
-        }
+            pos.x < -20 || pos.x > innerWidth + 20 ||
+            pos.y < -20 || pos.y > innerHeight + 20
+        ) continue;
 
         ctx.beginPath();
-        ctx.arc(
-            position.x,
-            position.y,
-            food.radius,
-            0,
-            Math.PI * 2
-        );
-
+        ctx.arc(pos.x, pos.y, food.radius, 0, Math.PI * 2);
         ctx.fillStyle = food.color;
+        ctx.shadowColor = food.color;
+        ctx.shadowBlur = 8;
         ctx.fill();
+        ctx.shadowBlur = 0;
     }
 }
 
-// ========================================
-// CAMERA
-// ========================================
+function drawBlocks() {
+    for (const block of blocks) {
+        const pos = worldPosition(block);
+        const half = block.size / 2;
 
-function updateCamera() {
-    if (!player) return;
+        ctx.fillStyle = "#6b8791";
+        ctx.fillRect(pos.x - half, pos.y - half, block.size, block.size);
 
-    camera.x += (player.x - camera.x) * 0.09;
-    camera.y += (player.y - camera.y) * 0.09;
+        ctx.fillStyle = "#a4bdc3";
+        ctx.fillRect(pos.x - half + 5, pos.y - half + 5, block.size - 10, 9);
+
+        ctx.strokeStyle = "#d5e9e7";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(pos.x - half, pos.y - half, block.size, block.size);
+
+        // Three hit indicators.
+        for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = i < block.health ? "#f6b34e" : "#274552";
+            ctx.fillRect(
+                pos.x - 19 + i * 14,
+                pos.y + 10,
+                10,
+                5
+            );
+        }
+
+        ctx.strokeStyle = "#d9f3ef66";
+        ctx.beginPath();
+        ctx.moveTo(pos.x - half + 12, pos.y - half + 18);
+        ctx.lineTo(pos.x - 5, pos.y + 4);
+        ctx.stroke();
+    }
 }
 
-// ========================================
+function drawBullets() {
+    for (const bullet of bullets) {
+        const pos = worldPosition(bullet);
+
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, bullet.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffe49b";
+        ctx.shadowColor = "#fff2a6";
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+}
+
+function drawAim() {
+    const pos = worldPosition(player);
+
+    ctx.strokeStyle = "#ffffff88";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 7]);
+
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    ctx.lineTo(mouse.x, mouse.y);
+    ctx.stroke();
+
+    ctx.setLineDash([]);
+}
+
+// ======================================
+// BLOCK PLACEMENT PREVIEW
+// ======================================
+
+function drawBlockPreview() {
+    if (selected !== 3) return;
+
+    const world = screenToWorld(mouse.x, mouse.y);
+    const size = 58;
+
+    const x = Math.round(world.x / size) * size;
+    const y = Math.round(world.y / size) * size;
+    const pos = worldPosition({ x, y });
+
+    ctx.fillStyle = distance(player, { x, y }) <= 230
+        ? "#a9e9cf66"
+        : "#ff6b6b66";
+
+    ctx.strokeStyle = "#ffffffaa";
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(pos.x - size / 2, pos.y - size / 2, size, size);
+    ctx.setLineDash([]);
+    ctx.fillRect(pos.x - size / 2, pos.y - size / 2, size, size);
+}
+
+// ======================================
+// MESSAGE
+// ======================================
+
+let messageTimer;
+
+function showMessage(text) {
+    message.textContent = text;
+    clearTimeout(messageTimer);
+
+    messageTimer = setTimeout(() => {
+        message.textContent = "";
+    }, 1400);
+}
+
+// ======================================
 // GAME LOOP
-// ========================================
+// ======================================
 
-function gameLoop() {
-    if (!playing) return;
+function loop(time) {
+    if (!running) return;
 
-    updatePlayer();
-    updateBots();
-    updateFoodCollisions();
-    updateEating();
-    updateCamera();
+    const dt = Math.min((time - lastTime) / 16.67, 2);
+    lastTime = time;
 
-    drawGrid();
+    if (player.invincible > 0) player.invincible -= dt;
+
+    movePlayer(dt);
+    updateBots(dt);
+    updateFood();
+    updateBullets(dt);
+    updateCamera(dt);
+
+    drawWater();
     drawFoods();
+    drawBlocks();
+    drawBullets();
 
-    for (const bot of bots) {
-        drawFish(bot);
-    }
+    for (const bot of bots) drawFish(bot);
 
-    drawFish(player, true);
+    drawFish(player);
+    drawAim();
+    drawBlockPreview();
 
-    scoreText.textContent =
-        "SIZE: " + Math.floor(player.radius);
+    updateHUD();
 
-    animationFrame = requestAnimationFrame(gameLoop);
+    animationId = requestAnimationFrame(loop);
 }
-
-// ========================================
-// SETTINGS
-// ========================================
-
-document.getElementById("showFish").addEventListener(
-    "change",
-    (event) => {
-        document.body.classList.toggle(
-            "hide-fish",
-            !event.target.checked
-        );
-    }
-);
-
-console.log("GoldfishMan offline game loaded.");
-console.log("Press CTRL + ALT + I to toggle Offline Test Mode.");

@@ -1,0 +1,92 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#eafaff">
+
+    <title>GoldfishMan.com</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Animated underwater background -->
+    <div class="ocean">
+        <div class="fish fish-one"><span></span></div>
+        <div class="fish fish-two"><span></span></div>
+        <div class="fish fish-three"><span></span></div>
+        <div class="fish fish-four"><span></span></div>
+        <div class="fish fish-five"><span></span></div>
+        <div class="fish fish-six"><span></span></div>
+
+        <div class="bubble bubble-one"></div>
+        <div class="bubble bubble-two"></div>
+        <div class="bubble bubble-three"></div>
+        <div class="bubble bubble-four"></div>
+        <div class="bubble bubble-five"></div>
+    </div>
+
+    <!-- Main menu -->
+    <main class="menu">
+
+        <div class="brand">
+            <p class="brand-small">WELCOME TO THE OCEAN</p>
+            <h1>Goldfish<span>Man</span></h1>
+            <p class="subtitle">A bigger pond. A bigger adventure.</p>
+        </div>
+
+        <div class="play-area">
+
+            <input
+                type="text"
+                id="username"
+                maxlength="16"
+                placeholder="Enter your username"
+                value="Goldfish"
+                autocomplete="nickname"
+            >
+
+            <button id="play" class="play-button" type="button">
+                <span class="play-icon"></span>
+            </button>
+
+            <p class="play-label">PLAY</p>
+
+            <p id="error" role="status"></p>
+
+        </div>
+
+        <!-- Settings -->
+        <details class="settings">
+            <summary aria-label="Settings" title="Settings">
+                <span class="gear">⚙</span>
+            </summary>
+
+            <div class="settings-panel">
+                <h2>Settings</h2>
+
+                <label>
+                    <span>Sound</span>
+                    <input type="checkbox" id="sound" checked>
+                </label>
+
+                <label>
+                    <span>Show background fish</span>
+                    <input type="checkbox" id="showFish" checked>
+                </label>
+            </div>
+        </details>
+
+        <div class="version">
+            GOLDFISHMAN.COM <span>•</span> EARLY ACCESS
+        </div>
+
+    </main>
+
+    <script src="menu.js"></script>
+
+</body>
+</html>

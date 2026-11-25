@@ -23,6 +23,8 @@ body {
     cursor: crosshair;
 }
 
+/* WATER BACKGROUND */
+
 #water {
     position: fixed;
     inset: 0;
@@ -37,9 +39,19 @@ body {
     z-index: -2;
     pointer-events: none;
     background:
-        radial-gradient(ellipse at 50% 0%, rgba(112,239,255,.20), transparent 55%),
-        linear-gradient(180deg, rgba(20,180,210,.08), rgba(0,35,65,.25));
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(112,239,255,.20),
+            transparent 55%
+        ),
+        linear-gradient(
+            180deg,
+            rgba(20,180,210,.08),
+            rgba(0,35,65,.25)
+        );
 }
+
+/* HEADER */
 
 header {
     text-align: center;
@@ -52,7 +64,9 @@ header {
     font-weight: 900;
     letter-spacing: -2.5px;
     color: #f4ffff;
-    text-shadow: 0 1px 0 rgba(255,255,255,.8), 0 3px 12px rgba(0,220,255,.35);
+    text-shadow:
+        0 1px 0 rgba(255,255,255,.8),
+        0 3px 12px rgba(0,220,255,.35);
 }
 
 .logo .dot {
@@ -67,6 +81,8 @@ header {
     letter-spacing: 1px;
     text-shadow: 0 1px 5px rgba(0,30,50,.4);
 }
+
+/* GOLDFISH CURSOR */
 
 #mouseFish {
     position: fixed;
@@ -91,6 +107,8 @@ header {
     to { translate: 0 2px; }
 }
 
+/* PROJECT GRID */
+
 main {
     max-width: 1050px;
     margin: 50px auto 0;
@@ -103,6 +121,8 @@ main {
     gap: 22px;
 }
 
+/* FRUTIGER AERO GLASS BOXES */
+
 .project {
     height: 190px;
     display: block;
@@ -110,16 +130,32 @@ main {
     overflow: hidden;
     border: 1px solid rgba(220,255,255,.65);
     border-radius: 17px;
-    background: linear-gradient(145deg, rgba(255,255,255,.24), rgba(120,225,255,.08) 45%, rgba(0,110,160,.13));
+
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,.24),
+        rgba(120,225,255,.08) 45%,
+        rgba(0,110,160,.13)
+    );
+
     backdrop-filter: blur(9px);
     -webkit-backdrop-filter: blur(9px);
+
     box-shadow:
         inset 0 1px 2px rgba(255,255,255,.55),
         inset 0 -12px 25px rgba(0,180,220,.07),
         0 5px 20px rgba(0,40,70,.12);
+
     text-decoration: none;
-    transition: background .3s, border-color .3s, transform .3s, box-shadow .3s;
+
+    transition:
+        background .3s,
+        border-color .3s,
+        transform .3s,
+        box-shadow .3s;
 }
+
+/* GLASS HIGHLIGHT */
 
 .project::after {
     content: "";
@@ -129,20 +165,35 @@ main {
     right: 0;
     height: 48%;
     border-radius: 17px 17px 50% 50%;
-    background: linear-gradient(180deg, rgba(255,255,255,.20), transparent);
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,.20),
+        transparent
+    );
     pointer-events: none;
 }
 
 .project:hover {
     transform: translateY(-7px) scale(1.015);
-    background: linear-gradient(145deg, rgba(255,255,255,.35), rgba(80,220,255,.18));
+
+    background: linear-gradient(
+        145deg,
+        rgba(255,255,255,.35),
+        rgba(80,220,255,.18)
+    );
+
     border-color: white;
-    box-shadow: inset 0 1px 4px rgba(255,255,255,.8), 0 10px 35px rgba(0,200,255,.18);
+
+    box-shadow:
+        inset 0 1px 4px rgba(255,255,255,.8),
+        0 10px 35px rgba(0,200,255,.18);
 }
 
 .project:active {
     transform: scale(.97);
 }
+
+/* SHIMMER */
 
 .project::before {
     content: "";
@@ -151,7 +202,14 @@ main {
     height: 200%;
     top: -50%;
     left: -150%;
-    background: linear-gradient(110deg, transparent 40%, rgba(255,255,255,.16) 50%, transparent 60%);
+
+    background: linear-gradient(
+        110deg,
+        transparent 40%,
+        rgba(255,255,255,.16) 50%,
+        transparent 60%
+    );
+
     transform: rotate(15deg);
     transition: left .7s;
 }
@@ -160,35 +218,7 @@ main {
     left: 100%;
 }
 
-/* AQUARIUM BOX LABEL */
-.aquarium-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    color: white;
-}
-
-.aquarium-title {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    font-size: 17px;
-    font-weight: bold;
-    text-shadow: 0 2px 8px rgba(0,30,50,.65);
-    transition: transform .3s ease;
-}
-
-.aquarium-title span:first-child {
-    font-size: 37px;
-}
-
-.aquarium-link:hover .aquarium-title {
-    transform: scale(1.08);
-}
+/* PROJECT BOUNCE */
 
 .project.bounce {
     animation: cardBounce .55s ease;
@@ -200,6 +230,8 @@ main {
     65% { transform: scale(1.025); }
     100% { transform: scale(1); }
 }
+
+/* WATER RIPPLES */
 
 .water-ring {
     position: fixed;
@@ -214,9 +246,22 @@ main {
 }
 
 @keyframes waterRing {
-    0% { width: 10px; height: 10px; opacity: .9; border-width: 3px; }
-    100% { width: 240px; height: 240px; opacity: 0; border-width: 1px; }
+    0% {
+        width: 10px;
+        height: 10px;
+        opacity: .9;
+        border-width: 3px;
+    }
+
+    100% {
+        width: 240px;
+        height: 240px;
+        opacity: 0;
+        border-width: 1px;
+    }
 }
+
+/* WATER DROPLETS */
 
 .droplet {
     position: fixed;
@@ -225,15 +270,32 @@ main {
     width: 6px;
     height: 9px;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 25%, white, #9beeff 45%, #39a9cf);
+
+    background: radial-gradient(
+        circle at 30% 25%,
+        white,
+        #9beeff 45%,
+        #39a9cf
+    );
+
     box-shadow: 0 0 10px rgba(100,230,255,.7);
+
     animation: dropletFly .65s ease-out forwards;
 }
 
 @keyframes dropletFly {
-    0% { opacity: 1; transform: translate(0,0) scale(1); }
-    100% { opacity: 0; transform: translate(var(--dx),var(--dy)) scale(.2); }
+    0% {
+        opacity: 1;
+        transform: translate(0,0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--dx),var(--dy)) scale(.2);
+    }
 }
+
+/* FLOATING BUBBLES */
 
 #bubbles {
     position: fixed;
@@ -249,21 +311,46 @@ main {
     width: var(--size);
     height: var(--size);
     left: var(--left);
+
     border: 1px solid rgba(220,255,255,.65);
-    background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.45), rgba(110,225,255,.08) 65%);
+
+    background: radial-gradient(
+        circle at 30% 25%,
+        rgba(255,255,255,.45),
+        rgba(110,225,255,.08) 65%
+    );
+
     border-radius: 50%;
-    box-shadow: inset 2px 2px 5px rgba(255,255,255,.35), 0 0 8px rgba(100,220,255,.12);
+
+    box-shadow:
+        inset 2px 2px 5px rgba(255,255,255,.35),
+        0 0 8px rgba(100,220,255,.12);
+
     animation: bubbleUp var(--duration) linear infinite;
     animation-delay: var(--delay);
 }
 
 @keyframes bubbleUp {
-    0% { transform: translate(0,0); opacity: 0; }
+    0% {
+        transform: translate(0,0);
+        opacity: 0;
+    }
+
     10% { opacity: .65; }
-    50% { transform: translate(25px,-50vh); }
+
+    50% {
+        transform: translate(25px,-50vh);
+    }
+
     90% { opacity: .4; }
-    100% { transform: translate(-20px,-110vh); opacity: 0; }
+
+    100% {
+        transform: translate(-20px,-110vh);
+        opacity: 0;
+    }
 }
+
+/* FOOTER */
 
 footer {
     text-align: center;
@@ -273,20 +360,45 @@ footer {
     letter-spacing: 1px;
 }
 
+/* ENTRANCE ANIMATION */
+
 @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-15px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+/* MOBILE */
+
 @media(max-width:700px) {
-    header { padding-top: 55px; }
-    .logo { font-size: 34px; }
-    .project-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
-    .project { height: 150px; }
+    header {
+        padding-top: 55px;
+    }
+
+    .logo {
+        font-size: 34px;
+    }
+
+    .project-grid {
+        grid-template-columns: repeat(2,minmax(0,1fr));
+        gap: 14px;
+    }
+
+    .project {
+        height: 150px;
+    }
 }
 
 @media(max-width:430px) {
-    .project-grid { grid-template-columns: 1fr; }
+    .project-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media(prefers-reduced-motion:reduce) {
@@ -300,51 +412,74 @@ footer {
 </head>
 
 <body>
+
+<!-- WATER -->
+
 <canvas id="water"></canvas>
 <div class="overlay"></div>
 <div id="bubbles"></div>
+
+<!-- HEADER -->
 
 <header>
     <div class="logo">
         goldfishman<span class="dot">.</span>com
     </div>
-    <p class="subtitle">A little corner of the internet.</p>
+
+    <p class="subtitle">
+        A little corner of the internet.
+    </p>
 </header>
+
+<!-- GOLDFISH -->
 
 <div id="mouseFish">
     <svg viewBox="0 0 100 65" xmlns="http://www.w3.org/2000/svg">
         <path d="M22 32 L2 10 Q8 32 2 54 Z" fill="#ff941e"/>
         <ellipse cx="49" cy="32" rx="32" ry="23" fill="#ffad32"/>
-        <path d="M37 12 Q48 23 55 10" fill="none" stroke="#ffd17b" stroke-width="5" stroke-linecap="round"/>
+        <path d="M37 12 Q48 23 55 10"
+              fill="none" stroke="#ffd17b"
+              stroke-width="5" stroke-linecap="round"/>
         <path d="M42 51 Q52 40 63 53" fill="#f28b1d"/>
         <circle cx="70" cy="25" r="4" fill="#222"/>
         <circle cx="71" cy="24" r="1.4" fill="white"/>
     </svg>
 </div>
 
+<!-- EMPTY PROJECT BOXES -->
+
 <main>
     <div class="project-grid">
-        <a class="project aquarium-link" href="/InteractiveAquarium/" aria-label="Interactive Aquarium">
-            <div class="aquarium-title">
-                <span>🐠</span>
-                <span>Interactive Aquarium</span>
-            </div>
-        </a>
 
+        <a class="project" href="#" aria-label="Project 1"></a>
         <a class="project" href="#" aria-label="Project 2"></a>
         <a class="project" href="#" aria-label="Project 3"></a>
+
         <a class="project" href="#" aria-label="Project 4"></a>
         <a class="project" href="#" aria-label="Project 5"></a>
         <a class="project" href="#" aria-label="Project 6"></a>
+
     </div>
 </main>
 
-<footer>GOLDFISHMAN.COM © 2026</footer>
+<footer>
+    GOLDFISHMAN.COM © 2026
+</footer>
 
 <script>
+
+/* ==================================
+   GOLDFISH MOUSE MOVEMENT
+================================== */
+
 const fish = document.getElementById("mouseFish");
-let mx = innerWidth / 2, my = innerHeight / 2;
-let fx = mx, fy = my, previousX = fx;
+
+let mx = innerWidth / 2;
+let my = innerHeight / 2;
+
+let fx = mx;
+let fy = my;
+let previousX = fx;
 
 document.addEventListener("pointermove", e => {
     mx = e.clientX;
@@ -352,208 +487,542 @@ document.addEventListener("pointermove", e => {
 });
 
 function animateFish() {
+
     fx += (mx - fx) * .09;
     fy += (my - fy) * .09;
+
     const direction = fx >= previousX ? 1 : -1;
+
     fish.style.left = fx + "px";
     fish.style.top = fy + "px";
-    fish.style.transform = `translate(-50%,-50%) scaleX(${direction})`;
+
+    fish.style.transform =
+        `translate(-50%,-50%) scaleX(${direction})`;
+
     previousX = fx;
+
     requestAnimationFrame(animateFish);
 }
+
 animateFish();
 
-const bubbleContainer = document.getElementById("bubbles");
+
+/* ==================================
+   FLOATING BUBBLES
+================================== */
+
+const bubbleContainer =
+    document.getElementById("bubbles");
+
 for(let i = 0; i < 28; i++) {
+
     const bubble = document.createElement("div");
+
     bubble.className = "bubble";
-    bubble.style.setProperty("--size", (Math.random() * 12 + 4) + "px");
-    bubble.style.setProperty("--left", (Math.random() * 100) + "%");
-    bubble.style.setProperty("--duration", (Math.random() * 12 + 9) + "s");
-    bubble.style.setProperty("--delay", (-Math.random() * 20) + "s");
+
+    bubble.style.setProperty(
+        "--size",
+        (Math.random() * 12 + 4) + "px"
+    );
+
+    bubble.style.setProperty(
+        "--left",
+        (Math.random() * 100) + "%"
+    );
+
+    bubble.style.setProperty(
+        "--duration",
+        (Math.random() * 12 + 9) + "s"
+    );
+
+    bubble.style.setProperty(
+        "--delay",
+        (-Math.random() * 20) + "s"
+    );
+
     bubbleContainer.appendChild(bubble);
 }
+
+
+/* ==================================
+   CLICK WATER SPLASHES
+================================== */
 
 const ripples = [];
 const maxRipples = 8;
 
 function createSplash(x,y) {
+
+    // CSS water ring
+
     const ring = document.createElement("div");
+
     ring.className = "water-ring";
+
     ring.style.left = x + "px";
     ring.style.top = y + "px";
+
     document.body.appendChild(ring);
+
     setTimeout(() => ring.remove(),1300);
 
+
+    // Water droplets
+
     for(let i = 0; i < 9; i++) {
+
         const drop = document.createElement("div");
+
         drop.className = "droplet";
+
         drop.style.left = x + "px";
         drop.style.top = y + "px";
+
         const angle = Math.random() * Math.PI * 2;
         const distance = Math.random() * 65 + 20;
-        drop.style.setProperty("--dx", Math.cos(angle) * distance + "px");
-        drop.style.setProperty("--dy", Math.sin(angle) * distance - 20 + "px");
+
+        drop.style.setProperty(
+            "--dx",
+            Math.cos(angle) * distance + "px"
+        );
+
+        drop.style.setProperty(
+            "--dy",
+            Math.sin(angle) * distance - 20 + "px"
+        );
+
         document.body.appendChild(drop);
+
         setTimeout(() => drop.remove(),700);
     }
 
-    ripples.push({x:x/innerWidth,y:1-y/innerHeight,start:performance.now()});
-    while(ripples.length > maxRipples) ripples.shift();
+
+    // Shader ripple
+
+    ripples.push({
+        x: x / innerWidth,
+        y: 1 - y / innerHeight,
+        start: performance.now()
+    });
+
+    while(ripples.length > maxRipples) {
+        ripples.shift();
+    }
+
+
+    // Bounce nearby boxes
 
     document.querySelectorAll(".project").forEach(card => {
+
         const rect = card.getBoundingClientRect();
-        const distance = Math.hypot(rect.left+rect.width/2-x,rect.top+rect.height/2-y);
+
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const distance = Math.hypot(
+            centerX - x,
+            centerY - y
+        );
+
         if(distance < 300) {
+
             card.classList.remove("bounce");
+
             void card.offsetWidth;
+
             card.classList.add("bounce");
-            setTimeout(() => card.classList.remove("bounce"),600);
+
+            setTimeout(() => {
+                card.classList.remove("bounce");
+            },600);
         }
     });
 }
 
-document.addEventListener("pointerdown", e => createSplash(e.clientX,e.clientY));
+document.addEventListener("pointerdown", e => {
+    createSplash(e.clientX,e.clientY);
+});
+
+
+/* ==================================
+   WEBGL WATER ENGINE
+================================== */
 
 const canvas = document.getElementById("water");
-const gl = canvas.getContext("webgl",{alpha:false,antialias:true});
+
+const gl = canvas.getContext("webgl", {
+    alpha: false,
+    antialias: true
+});
 
 if(gl) {
+
     const vertexShader = `
     attribute vec2 position;
-    void main(){gl_Position=vec4(position,0.0,1.0);}
+
+    void main() {
+        gl_Position = vec4(position,0.0,1.0);
+    }
     `;
 
     const fragmentShader = `
     precision highp float;
+
     uniform vec2 resolution;
     uniform vec2 mouse;
     uniform float time;
     uniform float active;
     uniform vec4 clicks[8];
 
-    void main(){
-        vec2 uv=gl_FragCoord.xy/resolution.xy;
-        vec2 p=uv*2.0-1.0;
-        p.x*=resolution.x/resolution.y;
-        float t=time*.32;
+    void main() {
 
-        float wave1=sin(p.x*3.5+t)*cos(p.y*4.0-t*.8);
-        float wave2=sin(p.y*6.0+t*1.3)*cos(p.x*5.0-t);
-        float wave3=sin((p.x+p.y)*8.0+t);
-        float water=wave1*.13+wave2*.08+wave3*.035;
+        vec2 uv = gl_FragCoord.xy / resolution.xy;
 
-        vec2 m=mouse*2.0-1.0;
-        m.x*=resolution.x/resolution.y;
-        float d=distance(p,m);
-        float cursorRipple=sin(d*34.0-t*9.0)*exp(-d*3.8)*active;
-        water+=cursorRipple*.09;
+        vec2 p = uv * 2.0 - 1.0;
 
-        for(int i=0;i<8;i++){
-            vec4 c=clicks[i];
-            vec2 clickPosition=c.xy*2.0-1.0;
-            clickPosition.x*=resolution.x/resolution.y;
-            float distanceFromClick=distance(p,clickPosition);
-            float age=max(0.0,time-c.z);
-            float radius=age*.75;
-            float wave=sin((distanceFromClick-radius)*48.0);
-            float envelope=exp(-age*1.3)*exp(-abs(distanceFromClick-radius)*5.0);
-            water+=wave*envelope*.075;
+        p.x *= resolution.x / resolution.y;
+
+        float t = time * .32;
+
+
+        // Flowing waves
+
+        float wave1 =
+            sin(p.x * 3.5 + t) *
+            cos(p.y * 4.0 - t * .8);
+
+        float wave2 =
+            sin(p.y * 6.0 + t * 1.3) *
+            cos(p.x * 5.0 - t);
+
+        float wave3 =
+            sin((p.x + p.y) * 8.0 + t);
+
+        float water =
+            wave1 * .13 +
+            wave2 * .08 +
+            wave3 * .035;
+
+
+        // Mouse movement ripple
+
+        vec2 m = mouse * 2.0 - 1.0;
+
+        m.x *= resolution.x / resolution.y;
+
+        float d = distance(p,m);
+
+        float cursorRipple =
+            sin(d * 34.0 - t * 9.0) *
+            exp(-d * 3.8) *
+            active;
+
+        water += cursorRipple * .09;
+
+
+        // Click ripples
+
+        for(int i = 0; i < 8; i++) {
+
+            vec4 c = clicks[i];
+
+            vec2 clickPosition = c.xy * 2.0 - 1.0;
+
+            clickPosition.x *= resolution.x / resolution.y;
+
+            float distanceFromClick =
+                distance(p,clickPosition);
+
+            float age = max(0.0,time-c.z);
+
+            float radius = age * .75;
+
+            float wave =
+                sin((distanceFromClick-radius)*48.0);
+
+            float envelope =
+                exp(-age*1.3) *
+                exp(-abs(distanceFromClick-radius)*5.0);
+
+            water += wave * envelope * .075;
         }
 
-        float caustics=sin(p.x*9.0+water*12.0+t)*cos(p.y*8.0-water*12.0-t);
-        caustics=pow(abs(caustics),5.0);
-        float depth=water+caustics*.12;
-        vec3 deepWater=vec3(.025,.20,.27);
-        vec3 lightWater=vec3(.10,.48,.57);
-        vec3 color=mix(deepWater,lightWater,clamp(.35+depth*1.4,0.0,.8));
-        color+=vec3(.30,.65,.67)*caustics*.27;
-        float glow=exp(-d*2.5)*active;
-        color+=vec3(.035,.12,.15)*glow;
-        gl_FragColor=vec4(color,1.0);
+
+        // Light caustics
+
+        float caustics =
+            sin(p.x*9.0+water*12.0+t) *
+            cos(p.y*8.0-water*12.0-t);
+
+        caustics = pow(abs(caustics),5.0);
+
+
+        // Frutiger Aero water palette
+
+        float depth = water + caustics * .12;
+
+        vec3 deepWater = vec3(.025,.20,.27);
+
+        vec3 lightWater = vec3(.10,.48,.57);
+
+        vec3 color = mix(
+            deepWater,
+            lightWater,
+            clamp(.35+depth*1.4,0.0,.8)
+        );
+
+
+        // Reflections
+
+        color += vec3(.30,.65,.67) *
+                 caustics * .27;
+
+
+        // Cursor glow
+
+        float glow = exp(-d*2.5)*active;
+
+        color += vec3(.035,.12,.15)*glow;
+
+        gl_FragColor = vec4(color,1.0);
     }
     `;
 
+
     function compileShader(type,source) {
-        const s=gl.createShader(type);
+
+        const s = gl.createShader(type);
+
         gl.shaderSource(s,source);
+
         gl.compileShader(s);
+
         if(!gl.getShaderParameter(s,gl.COMPILE_STATUS)) {
+
             console.error(gl.getShaderInfoLog(s));
+
             return null;
         }
+
         return s;
     }
 
-    const vs=compileShader(gl.VERTEX_SHADER,vertexShader);
-    const fs=compileShader(gl.FRAGMENT_SHADER,fragmentShader);
 
-    if(vs&&fs) {
-        const program=gl.createProgram();
+    const vs = compileShader(
+        gl.VERTEX_SHADER,
+        vertexShader
+    );
+
+    const fs = compileShader(
+        gl.FRAGMENT_SHADER,
+        fragmentShader
+    );
+
+
+    if(vs && fs) {
+
+        const program = gl.createProgram();
+
         gl.attachShader(program,vs);
+
         gl.attachShader(program,fs);
+
         gl.linkProgram(program);
 
-        if(gl.getProgramParameter(program,gl.LINK_STATUS)) {
+
+        if(!gl.getProgramParameter(program,gl.LINK_STATUS)) {
+
+            console.error(gl.getProgramInfoLog(program));
+
+        } else {
+
             gl.useProgram(program);
-            const vertices=new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]);
-            const buffer=gl.createBuffer();
+
+
+            // Full screen rectangle
+
+            const vertices = new Float32Array([
+                -1,-1,
+                 1,-1,
+                -1, 1,
+                -1, 1,
+                 1,-1,
+                 1, 1
+            ]);
+
+            const buffer = gl.createBuffer();
+
             gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
-            gl.bufferData(gl.ARRAY_BUFFER,vertices,gl.STATIC_DRAW);
 
-            const position=gl.getAttribLocation(program,"position");
+            gl.bufferData(
+                gl.ARRAY_BUFFER,
+                vertices,
+                gl.STATIC_DRAW
+            );
+
+
+            const position =
+                gl.getAttribLocation(program,"position");
+
             gl.enableVertexAttribArray(position);
-            gl.vertexAttribPointer(position,2,gl.FLOAT,false,0,0);
 
-            const resolution=gl.getUniformLocation(program,"resolution");
-            const mouse=gl.getUniformLocation(program,"mouse");
-            const time=gl.getUniformLocation(program,"time");
-            const active=gl.getUniformLocation(program,"active");
-            const clicksLocation=gl.getUniformLocation(program,"clicks[0]");
+            gl.vertexAttribPointer(
+                position,
+                2,
+                gl.FLOAT,
+                false,
+                0,
+                0
+            );
 
-            let mouseU=.5,mouseV=.5,pointerActive=0;
 
-            window.addEventListener("pointermove",e=>{
-                mouseU=e.clientX/innerWidth;
-                mouseV=1-e.clientY/innerHeight;
-                pointerActive=1;
+            // Shader uniforms
+
+            const resolution =
+                gl.getUniformLocation(program,"resolution");
+
+            const mouse =
+                gl.getUniformLocation(program,"mouse");
+
+            const time =
+                gl.getUniformLocation(program,"time");
+
+            const active =
+                gl.getUniformLocation(program,"active");
+
+            const clicksLocation =
+                gl.getUniformLocation(program,"clicks[0]");
+
+
+            let mouseU = .5;
+            let mouseV = .5;
+            let pointerActive = 0;
+
+
+            window.addEventListener("pointermove",e => {
+
+                mouseU = e.clientX / innerWidth;
+
+                mouseV = 1 - e.clientY / innerHeight;
+
+                pointerActive = 1;
             });
 
+
+            // Resize canvas
+
             function resize() {
-                const dpr=Math.min(devicePixelRatio||1,1.5);
-                canvas.width=innerWidth*dpr;
-                canvas.height=innerHeight*dpr;
-                gl.viewport(0,0,canvas.width,canvas.height);
-                gl.uniform2f(resolution,canvas.width,canvas.height);
+
+                const dpr = Math.min(
+                    devicePixelRatio || 1,
+                    1.5
+                );
+
+                canvas.width = innerWidth * dpr;
+
+                canvas.height = innerHeight * dpr;
+
+                gl.viewport(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                gl.uniform2f(
+                    resolution,
+                    canvas.width,
+                    canvas.height
+                );
             }
+
             window.addEventListener("resize",resize);
+
             resize();
 
-            function render(now) {
-                const seconds=now*.001;
-                const clickData=new Float32Array(32);
 
-                ripples.forEach((r,i)=>{
-                    const age=(now-r.start)*.001;
-                    if(age<3.5) {
-                        clickData[i*4]=r.x;
-                        clickData[i*4+1]=r.y;
-                        clickData[i*4+2]=seconds-age;
-                        clickData[i*4+3]=1;
+            // Animation loop
+
+            function render(now) {
+
+                const seconds = now * .001;
+
+                const clickData = new Float32Array(32);
+
+                ripples.forEach((r,i) => {
+
+                    const age =
+                        (now-r.start) * .001;
+
+                    if(age < 3.5) {
+
+                        clickData[i*4] = r.x;
+
+                        clickData[i*4+1] = r.y;
+
+                        clickData[i*4+2] = seconds-age;
+
+                        clickData[i*4+3] = 1;
                     }
                 });
 
+
                 gl.uniform1f(time,seconds);
+
                 gl.uniform2f(mouse,mouseU,mouseV);
+
                 gl.uniform1f(active,pointerActive);
-                gl.uniform4fv(clicksLocation,clickData);
-                gl.drawArrays(gl.TRIANGLES,0,6);
+
+                gl.uniform4fv(
+                    clicksLocation,
+                    clickData
+                );
+
+
+                gl.drawArrays(
+                    gl.TRIANGLES,
+                    0,
+                    6
+                );
+
                 requestAnimationFrame(render);
             }
+
             requestAnimationFrame(render);
         }
     }
+
+} else {
+
+    console.warn(
+        "WebGL unavailable. Water effects require WebGL support."
+    );
 }
+
+
+/* ==================================
+   SECRET RICKROLL EASTER EGG
+================================== */
+
+document.addEventListener("keydown", event => {
+
+    if (
+        event.ctrlKey &&
+        event.altKey &&
+        event.key.toLowerCase() === "i"
+    ) {
+
+        event.preventDefault();
+
+        window.open(
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            "_blank"
+        );
+    }
+
+});
+
 </script>
+
 </body>
 </html>
